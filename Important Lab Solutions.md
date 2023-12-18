@@ -119,3 +119,6 @@ If the stored request is incomplete and doesn't include the Cookie header, you w
 11. Send this query and observe that you've successfully fetched the usernames and passwords from the database, separated by a ~ character.
 12. Use the administrator's credentials to log in and solve the lab.
 
+---
+
+### Lab: Discovering vulnerabilities quickly with targeted scanning
