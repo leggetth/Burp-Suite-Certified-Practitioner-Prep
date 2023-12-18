@@ -1,6 +1,17 @@
 # [SQL injection](https://portswigger.net/web-security/sql-injection)
 
 
+### Lab: SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+
+1.  Use Burp Suite to intercept and modify the request that sets the product category filter.
+2.  Modify the `category` parameter, giving it the value `'+OR+1=1--`
+3.  Submit the request, and verify that the response now contains additional items.
+
+### Lab: SQL injection vulnerability allowing login bypass
+
+1.  Use Burp Suite to intercept and modify the login request.
+2.  Modify the `username` parameter, giving it the value: `administrator'--`
+
 ### Lab: SQL injection UNION attack, determining the number of columns returned by the query
 
 1.  Use Burp Suite to intercept and modify the request that sets the product category filter.
@@ -168,16 +179,19 @@ The solution described here is sufficient simply to trigger a DNS lookup and so 
 6.  You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The password of the `administrator` user should appear in the subdomain of the interaction, and you can view this within the Burp Collaborator client. For DNS interactions, the full domain name that was looked up is shown in the Description tab. For HTTP interactions, the full domain name is shown in the Host header in the Request to Collaborator tab.
 7.  In your browser, click "My account" to open the login page. Use the password to log in as the `administrator` user.
 
-### Lab: SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
-
-1.  Use Burp Suite to intercept and modify the request that sets the product category filter.
-2.  Modify the `category` parameter, giving it the value `'+OR+1=1--`
-3.  Submit the request, and verify that the response now contains additional items.
-
-### Lab: SQL injection vulnerability allowing login bypass
-
-1.  Use Burp Suite to intercept and modify the login request.
-2.  Modify the `username` parameter, giving it the value: `administrator'--`
+### Lab: SQL injection with filter bypass via XML encoding
+1. Observe that the stock check feature sends the productId and storeId to the application in XML format.
+2. Send the POST /product/stock request to Burp Repeater.
+3. In Burp Repeater, probe the storeId to see whether your input is evaluated. For example, try replacing the ID with mathematical expressions that evaluate to other potential IDs, for example: `<storeId>1+1</storeId>`
+4. Observe that your input appears to be evaluated by the application, returning the stock for different stores.
+5. Try determining the number of columns returned by the original query by appending a UNION SELECT statement to the original store ID: `<storeId>1 UNION SELECT NULL</storeId>`
+6. Observe that your request has been blocked due to being flagged as a potential attack.
+7. As you're injecting into XML, try obfuscating your payload using XML entities. One way to do this is using the Hackvertor extension. Just highlight your input, right-click, then select Extensions > Hackvertor > Encode > dec_entities/hex_entities.
+8. Resend the request and notice that you now receive a normal response from the application. This suggests that you have successfully bypassed the WAF.
+9. Pick up where you left off, and deduce that the query returns a single column. When you try to return more than one column, the application returns 0 units, implying an error.
+10. As you can only return one column, you need to concatenate the returned usernames and passwords, for example: `<storeId><@hex_entities>1 UNION SELECT username || '~' || password FROM users<@/hex_entities></storeId>`
+11. Send this query and observe that you've successfully fetched the usernames and passwords from the database, separated by a ~ character.
+12. Use the administrator's credentials to log in and solve the lab.
 
 ---
 
