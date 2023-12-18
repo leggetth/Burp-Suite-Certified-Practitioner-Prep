@@ -15,6 +15,8 @@
 5.  Take a note of the value of the victim's cookie in the POST body.
 6.  Reload the main blog page, using Burp Proxy or Burp Repeater to replace your own session cookie with the one you captured in Burp Collaborator. Send the request to solve the lab. To prove that you have successfully hijacked the admin user's session, you can use the same cookie in a request to `/my-account` to load the admin user's account page.
 
+---
+
 ### Lab: Blind SQL injection with out-of-band data exfiltration
 
 1.  Visit the front page of the shop, and use [Burp Suite Professional](https://portswigger.net/burp/pro) to intercept and modify the request containing the `TrackingId` cookie.
@@ -26,6 +28,9 @@
 7.  In your browser, click "My account" to open the login page. Use the password to log in as the `administrator` user.
 
 
+
+
+---
 
 ### Lab: Brute-forcing a stay-logged-in cookie
 
@@ -46,6 +51,8 @@
     -   Change the "Add prefix" rule to add `carlos:` instead of `wiener:`.
 10.  When the attack is finished, the lab will be solved. Notice that only one request returned a response containing `Update email`. The payload from this request is the valid `stay-logged-in` cookie for Carlos's account.
 
+---
+
 ### Lab: SSRF with blacklist-based input filter
 
 1.  Visit a product, click "Check stock", intercept the request in Burp Suite, and send it to Burp Repeater.
@@ -53,6 +60,8 @@
 3.  Bypass the block by changing the URL to: `http://127.1/`
 4.  Change the URL to `http://127.1/admin` and observe that the URL is blocked again.
 5.  Obfuscate the "a" by double-URL encoding it to %2561 to access the admin interface and delete the target user.
+
+---
 
 ### Lab: SQL injection with filter bypass via XML encoding
 1. Observe that the stock check feature sends the productId and storeId to the application in XML format.
