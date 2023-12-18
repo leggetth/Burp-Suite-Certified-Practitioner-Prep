@@ -25,3 +25,24 @@
 6.  You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The password of the `administrator` user should appear in the subdomain of the interaction, and you can view this within the Burp Collaborator client. For DNS interactions, the full domain name that was looked up is shown in the Description tab. For HTTP interactions, the full domain name is shown in the Host header in the Request to Collaborator tab.
 7.  In your browser, click "My account" to open the login page. Use the password to log in as the `administrator` user.
 
+
+
+### Lab: Brute-forcing a stay-logged-in cookie
+
+1.  With Burp running, log in to your own account with the "Stay logged in" option selected. Notice that this sets a `stay-logged-in` cookie.
+2.  Examine this cookie in the [Inspector](https://portswigger.net/burp/documentation/desktop/functions/message-editor/inspector) panel and notice that it is Base64-encoded. Its decoded value is `wiener:51dc30ddc473d43a6011e9ebba6ca770`. Study the length and character set of this string and notice that it could be an MD5 hash. Given that the plaintext is your username, you can make an educated guess that this may be a hash of your password. Hash your password using MD5 to confirm that this is the case. We now know that the cookie is constructed as follows:  
+    `base64(username+':'+md5HashOfPassword)`
+3.  Log out of your account.
+4.  Send the most recent `GET /my-account` request to Burp Intruder.
+5.  In Burp Intruder, add a payload position to the `stay-logged-in` cookie and add your own password as a single payload.
+6.  Under "Payload processing", add the following rules in order. These rules will be applied sequentially to each payload before the request is submitted.
+    -   Hash: `MD5`
+    -   Add prefix: `wiener:`
+    -   Encode: `Base64-encode`
+7.  As the "Update email" button is only displayed when you access the `/my-account` page in an authenticated state, we can use the presence or absence of this button to determine whether we've successfully brute-forced the cookie. On the "Options" tab, add a grep match rule to flag any responses containing the string `Update email`. Start the attack.
+8.  Notice that the generated payload was used to successfully load your own account page. This confirms that the payload processing rules work as expected and you were able to construct a valid cookie for your own account.
+9.  Make the following adjustments and then repeat this attack:
+    -   Remove your own password from the payload list and add the list of [candidate passwords](https://portswigger.net/web-security/authentication/auth-lab-passwords) instead.
+    -   Change the "Add prefix" rule to add `carlos:` instead of `wiener:`.
+10.  When the attack is finished, the lab will be solved. Notice that only one request returned a response containing `Update email`. The payload from this request is the valid `stay-logged-in` cookie for Carlos's account.
+
