@@ -3405,7 +3405,7 @@ Study the address change feature
 14. Add the leather jacket to your basket.
 15. Go to your basket and click Place order to solve the lab.
 
-###
+### Lab: Exploiting a mass assignment vulnerability
 
 1. In Burp's browser, log in to the application using the credentials wiener:peter.
 2. Click on the Lightweight "l33t" Leather Jacket product and add it to your basket.
