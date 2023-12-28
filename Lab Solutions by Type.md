@@ -817,6 +817,111 @@ To inject newlines into HTTP/2 headers, use the Inspector to drill down into the
 12. Test the exploit on yourself, making sure that you're navigated to the lab's home page and that the alert(document.cookie) payload is triggered.
 13. Go back to the exploit server and deliver the exploit to the victim to solve the lab.
 
+## GraphQL API vulnerabilities
+
+### Lab: Accessing private GraphQL posts
+
+1. In Burp's browser, access the blog page.
+2. In Burp, go to Proxy > HTTP history and notice the following:
+        a. Blog posts are retrieved using a GraphQL query.
+        b. In the response to the GraphQL query, each blog post has its own sequential id.
+        c. Blog post id 3 is missing from the list. This indicates that there is a hidden blog post.
+3. Find the POST /graphql/v1 request. Right-click it and select Send to Repeater.
+4. In Repeater, right-click anywhere in the Request panel of the message editor and select GraphQL > Set introspection query to insert an introspection query into the request body.
+5. Send the request. Notice in the response that the BlogPost type has a postPassword field available.
+6. In the HTTP history, find the POST /graphql/v1 request. Right-click it and select Send to Repeater.
+7. In Repeater, click on the GraphQL tab. In the Variables panel, modify the id variable to 3 (the ID of the hidden blog post).
+8. In the Query panel, add the postPassword field to the query.
+9. Send the request.
+10. Copy the contents of the response's postPassword field and paste them into the Submit solution dialog to solve the lab. You may need to refresh the page.
+
+### Lab: Accidental exposure of private GraphQL fields
+
+1. In Burp's browser, access the lab and select My account.
+2. Attempt to log in to the site.
+3. In Burp, go to Proxy > HTTP history and notice that the login attempt is sent as a GraphQL mutation containing a username and password.
+4. Right-click the login request and select Send to Repeater.
+5. In Repeater, right-click anywhere within the Request panel of the message editor and select GraphQL > Set introspection query to insert an introspection query into the request body.
+6. Send the request.
+7. Right-click the message and select GraphQL > Save GraphQL queries to site map.
+8. Go to Target > Site map and review the GraphQL queries. Notice the following:
+       a. There is a getUser query that returns a user's username and password.
+       b. This query fetches the relevant user information via a direct reference to an id number.
+9. Modify the query to retrieve the administrator credentials
+10. Right-click the the getUser query and select Send to Repeater.
+11. In Repeater, click Send. Notice that the default id value of 0 doesn't return a user.
+12. Select the GraphQL tab and test alternative values for the id variable until the API returns the administrator's credentials. In this case, the administrator's ID is 1.
+13. Log in to the site as the administrator, go to the Admin panel, and delete carlos to solve the lab.
+
+### Lab: Finding a hidden GraphQL endpoint
+
+1. In Repeater, send requests to some common GraphQL endpoint suffixes and inspect the results.
+2. Note that when you send a GET request to /api the response contains a "Query not present" error. This hints that there may be a GraphQL endpoint responding to GET requests at this location.
+3. Amend the request to contain a universal query. Note that, because the endpoint is responding to GET requests, you need to send the query as a URL parameter.
+4. For example: `/api?query=query{__typename}`.
+5. Notice that the response confirms that this is a GraphQL endpoint:
+    `{
+      "data": {
+        "__typename": "query"
+      }
+    }`
+6. Send a new request with a URL-encoded introspection query as a query parameter.
+7. To do this, right-click the request and select GraphQL > Set introspection query: `/api?query=query+IntrospectionQuery+%7B%0A++__schema+%7B%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A`
+8. Notice from the response that introspection is disallowed.
+9. Modify the query to include a newline character after __schema and resend.
+10. For example: `/api?query=query+IntrospectionQuery+%7B%0D%0A++__schema%0a+%7B%0D%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A`
+11. Notice that the response now includes full introspection details. This is because the server is configured to exclude queries matching the regex "__schema{", which the query no longer matches even though it is still a valid introspection query.
+12. Right-click the request and select GraphQL > Save GraphQL queries to site map.
+13. Go to Target > Site map to see the API queries. Use the GraphQL tab and find the getUser query. Right-click the request and select Send to Repeater.
+14. In Repeater, send the getUser query to the endpoint you discovered.
+15. Notice that the response returns:
+    `{
+    "data": {
+    "getUser": null
+    }
+    }`
+16. Click on the GraphQL tab and change the id variable to find carlos's user ID. In this case, the relevant user ID is 3.
+17. In Target > Site map, browse the schema again and find the deleteOrganizationUser mutation. Notice that this mutation takes a user ID as a parameter.
+18. Send the request to Repeater.
+19. In Repeater, send a deleteOrganizationUser mutation with a user ID of 3 to delete carlos and solve the lab.
+20. For example: `/api?query=mutation+%7B%0A%09deleteOrganizationUser%28input%3A%7Bid%3A+3%7D%29+%7B%0A%09%09user+%7B%0A%09%09%09id%0A%09%09%7D%0A%09%7D%0A%7D`
+
+### Lab: Bypassing GraphQL brute force protections
+
+1. In Burp's browser, access the lab and select My account.
+2. Attempt to log in to the site using incorrect credentials.
+3. In Burp, go to Proxy > HTTP history. Note that login requests are sent as a GraphQL mutation.
+4. Right-click the login request and select Send to Repeater.
+5. In Repeater, attempt some further login requests with incorrect credentials. Note that after a short period of time the API starts to return a rate limit error.
+6. In the GraphQL tab, craft a request that uses aliases to send multiple login mutations in one message. See the tip in this lab for a method that makes this process less time-consuming.
+7. Bear the following in mind when constructing your request:
+        a. The list of aliases should be contained within a mutation {} type.
+        b. Each aliased mutation should have the username carlos and a different password from the authentication list.
+        c. If you are modifying the request that you sent to Repeater, delete the variable dictionary and operationName field from the request before sending. You can do this from Repeater's Pretty tab.
+        d. Ensure that each alias requests the success field, as shown in the simplified example below:
+                `mutation {
+                    bruteforce0:login(input:{password: "123456", username: "carlos"}) {
+                          token
+                          success
+                      }
+                      bruteforce1:login(input:{password: "password", username: "carlos"}) {
+                          token
+                          success
+                      }
+                ...
+                      bruteforce99:login(input:{password: "12345678", username: "carlos"}) {
+                          token
+                          success
+                      }
+                }`
+                                    
+
+8. Click Send.
+9. Notice that the response lists each login attempt and whether its login attempt was successful.
+10. Use the search bar below the response to search for the string true. This indicates which of the aliased mutations was able to successfully log in as carlos.
+11. Check the request for the password that was used by the successful alias.
+12. Log in to the site using the carlos credentials to solve the lab.
+
 # Privilege Escalation
 
 ## SQL injection
@@ -2012,6 +2117,139 @@ Study the address change feature
 14. Send the request. Notice that the isAdmin value in the response has been updated. This suggests that the object doesn't have its own isAdmin property, but has instead inherited it from the polluted prototype.
 15. In the browser, refresh the page and confirm that you now have a link to access the admin panel.
 16. Go to the admin panel and delete carlos to solve the lab.
+
+## GraphQL API vulnerabilities
+
+### Lab: Performing CSRF exploits over GraphQL
+
+1. Open Burp's browser, access the lab and log in to your account.
+2. Enter a new email address, then click Update email.
+3. In Burp, go to Proxy > HTTP history and check the resulting request. Note that the email change is sent as a GraphQL mutation.
+4. Right-click the email change request and select Send to Repeater.
+5. In Repeater, amend the GraphQL query to change the email to a second different address.
+6. Click Send.
+7. In the response, notice that the email has changed again. This indicates that you can reuse a session cookie to send multiple requests.
+8. Convert the request into a POST request with a Content-Type of x-www-form-urlencoded. To do this, right-click the request and select Change request method twice.
+9. Notice that the mutation request body has been deleted. Add the request body back in with URL encoding.
+10. The body should look like the below: `query=%0A++++mutation+changeEmail%28%24input%3A+ChangeEmailInput%21%29+%7B%0A++++++++changeEmail%28input%3A+%24input%29+%7B%0A++++++++++++email%0A++++++++%7D%0A++++%7D%0A&operationName=changeEmail&variables=%7B%22input%22%3A%7B%22email%22%3A%22hacker%40hacker.com%22%7D%7D`
+11. Right-click the request and select Engagement tools > Generate CSRF PoC. Burp displays the CSRF PoC generator dialog.
+12. Amend the HTML in the CSRF PoC generator dialog so that it changes the email a third time. This step is necessary because otherwise the exploit won't make any changes to the current email address at the time it is run. Likewise, if you test the exploit before delivering, make sure that you change the email from whatever it is currently set to before delivering to the victim.
+13. Copy the HTML.
+14. In the lab, click Go to exploit server.
+15. Paste the HTML into the exploit server and click Deliver exploit to victim to solve the lab.
+
+## Race Conditions
+
+### Lab: Bypassing rate limits via race conditions
+
+1. Experiment with the login function by intentionally submitting incorrect passwords for your own account.
+2. Observe that if you enter the incorrect password more than three times, you're temporarily blocked from making any more login attempts for the same account.
+3. Try logging in using another arbitrary username and observe that you see the normal Invalid username or password message. This indicates that the rate limit is enforced per-username rather than per-session.
+4. Deduce that the number of failed attempts per username must be stored server-side.
+5. Consider that there may be a race window between:
+       a. When you submit the login attempt.
+       b. When the website increments the counter for the number of failed login attempts associated with a particular username.
+6. From the proxy history, find a POST /login request containing an unsuccessful login attempt for your own account.
+7. Send this request to Burp Repeater 20 times. Tip: You can do this quickly using the Ctrl/Cmd + R hotkey.
+8. In Repeater, add all 20 of these tabs to a new group. For details on how to do this, see Creating a new tab group
+9. Send the group of requests in sequence, using separate connections to reduce the chance of interference. For details on how to do this, see Sending requests in sequence.
+10. Observe that after two more failed login attempts, you're temporarily locked out as expected.
+11. Send the group of requests again, but this time in parallel. For details on how to do this, see Sending requests in parallel
+12. Study the responses. Notice that although you have triggered the account lock, more than three requests received the normal Invalid username and password response.
+13. Infer that if you're quick enough, you're able to submit more than three login attempts before the account lock is triggered.
+14. Still in Repeater, highlight the value of the password parameter in the POST /login request.
+15. Right-click and select Extensions > Turbo Intruder > Send to turbo intruder.
+16. In Turbo Intruder, in the request editor, notice that the value of the password parameter is automatically marked as a payload position with the %s placeholder.
+17. Change the username parameter to carlos.
+18. From the drop-down menu, select the examples/race-single-packet-attack.py template.
+19. In the Python editor, edit the template so that your attack queues the request once using each of the candidate passwords. For simplicity, you can copy the following example:
+    ```
+    def queueRequests(target, wordlists):
+        # as the target supports HTTP/2, use engine=Engine.BURP2 and concurrentConnections=1 for a single-packet attack
+        engine = RequestEngine(endpoint=target.endpoint,
+                               concurrentConnections=1,
+                               engine=Engine.BURP2
+                               )
+    
+        # assign the list of candidate passwords from your clipboard
+        passwords = wordlists.clipboard
+    
+        # queue a login request using each password from the wordlist
+        # the 'gate' argument withholds the final part of each request until engine.openGate() is invoked
+        for password in passwords:
+            engine.queue(target.req, password, gate='1')
+    
+        # once every request has been queued
+        # invoke engine.openGate() to send all requests in the given gate simultaneously
+        engine.openGate('1')`
+
+
+    def handleResponse(req, interesting):
+        table.add(req)
+    ```
+21. Note that we're assigning the password list from the clipboard by referencing wordlists.clipboard. Copy the list of candidate passwords to your clipboard.
+22. Launch the attack.
+23. Study the responses.
+24. If you have no successful logins, wait for the account lock to reset and then repeat the attack. You might want to remove any passwords from the list that you know are incorrect.
+25. If you get a 302 response, notice that this login appears to be successful. Make a note of the corresponding password from the Payload column.
+26. Wait for the account lock to reset, then log in as carlos using the identified password.
+27. Access the admin panel and delete the user carlos to solve the lab.
+
+### Lab: Single-endpoint race conditions
+
+1. Log in and attempt to change your email to anything@exploit-<YOUR-EXPLOIT-SERVER-ID>.exploit-server.net. Observe that a confirmation email is sent to your intended new address, and you're prompted to click a link containing a unique token to confirm the change.
+2. Complete the process and confirm that your email address has been updated on your account page.
+3. Try submitting two different @exploit-<YOUR-EXPLOIT-SERVER-ID>.exploit-server.net email addresses in succession, then go to the email client.
+4. Notice that if you try to use the first confirmation link you received, this is no longer valid. From this, you can infer that the website only stores one pending email address at a time. As submitting a new email address edits this entry in the database rather than appending to it, there is potential for a collision.
+5. Send the POST /my-account/change-email request to Repeater 20 times. Tip: You can do this quickly using the Ctrl/Cmd + R hotkey.
+6. In Repeater, add all 20 tabs to a new group. For details on how to do this, see Creating a new tab group
+7. In each tab, modify the first part of the email address so that it is unique to each request, for example, test1@exploit-<YOUR-EXPLOIT-SERVER-ID>.exploit-server.net, test2@..., test3@... and so on.
+8. Send the group of requests in sequence over separate connections. For details on how to do this, see Sending requests in sequence.
+9. Go back to the email client and observe that you have received a single confirmation email for each of the email change requests.
+10. In Repeater, send the group of requests again, but this time in parallel, effectively attempting to change the pending email address to multiple different values at the same time. For details on how to do this, see Sending requests in parallel.
+11. Go to the email client and study the new set of confirmation emails you've received. Notice that, this time, the recipient address doesn't always match the pending new email address.
+12. Consider that there may be a race window between when the website:
+        a. Kicks off a task that eventually sends an email to the provided address.
+        b. Retrieves data from the database and uses this to render the email template.
+13. Deduce that when a parallel request changes the pending email address stored in the database during this window, this results in confirmation emails being sent to the wrong address.
+14. In Repeater, create a new group containing two copies of the POST /my-account/change-email request.
+15. Change the email parameter of one request to anything@exploit-<YOUR-EXPLOIT-SERVER-ID>.exploit-server.net.
+16. Change the email parameter of the other request to carlos@ginandjuice.shop.
+17. Send the requests in parallel.
+18. Check your inbox:
+        a. If you received a confirmation email in which the address in the body matches your own address, resend the requests in parallel and try again.
+        b. If you received a confirmation email in which the address in the body is carlos@ginandjuice.shop, click the confirmation link to update your address accordingly.
+19. Go to your account page and notice that you now see a link for accessing the admin panel.
+20. Visit the admin panel and delete the user carlos to solve the lab.
+
+### Lab: Exploiting time-sensitive vulnerabilities
+
+1. Study the password reset process by submitting a password reset for your own account and observe that you're sent an email containing a reset link. The query string of this link includes your username and a token.
+2. Send the POST /forgot-password request to Burp Repeater.
+3. In Repeater, send the request a few times, then check your inbox again.
+4. Observe that every reset request results in a link with a different token.
+5. Consider the following:
+       a. The token is of a consistent length. This suggests that it's either a randomly generated string with a fixed number of characters, or could be a hash of some unknown data, which may be predictable.
+       b. The fact that the token is different each time indicates that, if it is in fact a hash digest, it must contain some kind of internal state, such as an RNG, a counter, or a timestamp.
+6. Duplicate the Repeater tab and add both tabs to a new group. For details on how to do this, see Creating a new tab group
+7. Send the pair of reset requests in parallel a few times. For details on how to do this, see Sending requests in parallel.
+8. Observe that there is still a significant delay between each response and that you still get a different token in each confirmation email. Infer that your requests are still being processed in sequence rather than concurrently.
+9. Notice that your session cookie suggests that the website uses a PHP back-end. This could mean that the server only processes one request at a time per session.
+10. Send the GET /forgot-password request to Burp Repeater, remove the session cookie from the request, then send it.
+11. From the response, copy the newly issued session cookie and CSRF token and use them to replace the respective values in one of the two POST /forgot-password requests. You now have a pair of password reset requests from two different sessions.
+12. Send the two POST requests in parallel a few times and observe that the processing times are now much more closely aligned, and sometimes identical.
+13. Go back to your inbox and notice that when the response times match for the pair of reset requests, this results in two confirmation emails that use an identical token. This confirms that a timestamp must be one of the inputs for the hash.
+14. Consider that this also means the token would be predictable if you knew the other inputs for the hash function.
+15. Notice the separate username parameter. This suggests that the username might not be included in the hash, which means that two different usernames could theoretically have the same token.
+16. In Repeater, go to the pair of POST /forgot-password requests and change the username parameter in one of them to carlos.
+17. Resend the two requests in parallel. If the attack worked, both users should be assigned the same reset token, although you won't be able to see this.
+18. Check your inbox again and observe that, this time, you've only received one new confirmation email. Infer that the other email, hopefully containing the same token, has been sent to Carlos.
+19. Copy the link from the email and change the username in the query string to carlos.
+20. Visit the URL in the browser and observe that you're taken to the form for setting a new password as normal.
+21. Set the password to something you'll remember and submit the form.
+22. Try logging in as carlos using the password you just set.
+        a. If you can't log in, resend the pair of password reset emails and repeat the process.
+        b. If you successfully log in, visit the admin panel and delete the user carlos to solve the lab.
 
 # System Access
 
