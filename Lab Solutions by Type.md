@@ -1721,7 +1721,6 @@ Instead of using the built-in attack in the JWT Editor extension, you can embed 
 
 ### Lab: JWT authentication bypass via kid header path traversal
 
-
 Note
 
 In this solution, we'll point the kid parameter to the standard file /dev/null. In practice, you can point the kid parameter to any file with predictable contents.
