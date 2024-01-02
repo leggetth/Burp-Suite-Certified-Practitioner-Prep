@@ -10,3 +10,5 @@ Materials used in preperation for the BSCP certification from PortSwigger
 **Lab Solutions by Type.md**: Similiar to "All Lab Solutions.md", but categorized by the three stages of the exam: Initial Access, PrivX, System Access. I used this for if/when I got stuck, I would see which vunerability category I hadn't tried yet, or what exploit technique of a certain vulnerability category I didn't try yet.
 
 **Methodology.md**: I created this to ensure I stayed on task and didn't get too far stuck or too far down rabbits holes. Almost all things listed to check for are straight from the labs/learning materials. Categorized by the three exam stages with the potential pages you may come across for each part. 
+
+**Useful Payloads.md**: These are some very helpful payloads that I found when working through the labs.
