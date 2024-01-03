@@ -1,0 +1,169 @@
+- Limit Overrun
+Predict a potential collision
+
+    Log in and buy the cheapest item possible, making sure to use the provided discount code so that you can study the purchasing flow.
+
+    Consider that the shopping cart mechanism and, in particular, the restrictions that determine what you are allowed to order, are worth trying to bypass.
+
+    In Burp, from the proxy history, identify all endpoints that enable you to interact with the cart. For example, a POST /cart request adds items to the cart and a POST /cart/coupon request applies the discount code.
+
+    Try to identify any restrictions that are in place on these endpoints. For example, observe that if you try applying the discount code more than once, you receive a Coupon already applied response.
+
+    Make sure you have an item to your cart, then send the GET /cart request to Burp Repeater.
+
+    In Repeater, try sending the GET /cart request both with and without your session cookie. Confirm that without the session cookie, you can only access an empty cart. From this, you can infer that:
+        The state of the cart is stored server-side in your session.
+        Any operations on the cart are keyed on your session ID or the associated user ID.
+
+    This indicates that there is potential for a collision.
+
+    Consider that there may be a race window between when you first apply a discount code and when the database is updated to reflect that you've done this already.
+
+Benchmark the behavior
+
+    Make sure there is no discount code currently applied to your cart.
+
+    Send the request for applying the discount code (POST /cart/coupon) to Repeater 20 times. Tip: You can do this quickly using the Ctrl/Cmd + R hotkey.
+
+    In Repeater, add all 20 of these tabs to a new group. For details on how to do this, see Creating a new tab group
+
+    Send the group of requests in sequence, using separate connections to reduce the chance of interference. For details on how to do this, see Sending requests in sequence.
+
+    Observe that the first response confirms that the discount was successfully applied, but the rest of the responses consistently reject the code with the same Coupon already applied message.
+
+Probe for clues
+
+    Remove the discount code from your cart.
+
+    In Repeater, send the group of requests again, but this time in parallel, effectively applying the discount code multiple times at once. For details on how to do this, see Sending requests in parallel.
+
+    Study the responses and observe that multiple requests received a response indicating that the code was successfully applied. If not, remove the code from your cart and repeat the attack.
+
+    In the browser, refresh your cart and confirm that the 20% reduction has been applied more than once, resulting in a significantly cheaper order.
+
+Prove the concept
+
+    Remove the applied codes and the arbitrary item from your cart and add the leather jacket to your cart instead.
+
+    Resend the group of POST /cart/coupon requests in parallel.
+
+    Refresh the cart and check the order total:
+        If the order total is still higher than your remaining store credit, remove the discount codes and repeat the attack.
+        If the order total is less than your remaining store credit, purchase the jacket to solve the lab.
+
+- Bypassing rate limits
+-- Turbo intruder script
+-------------------------------------------------------------------------------------------------------
+def queueRequests(target, wordlists):
+
+    # if the target supports HTTP/2, use engine=Engine.BURP2 to trigger the single-packet attack
+    # if they only support HTTP/1, use Engine.THREADED or Engine.BURP instead
+    # for more information, check out https://portswigger.net/research/smashing-the-state-machine
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=1,
+                           engine=Engine.BURP2
+                           )
+
+    passwords = wordlists.clipboard
+    
+    # the 'gate' argument withholds part of each request until openGate is invoked
+    # if you see a negative timestamp, the server responded before the request was complete
+    for password in passwords:
+        engine.queue(target.req, password, gate='race1')
+
+    # once every 'race1' tagged request has been queued
+    # invoke engine.openGate() to send them in sync
+    engine.openGate('race1')
+
+
+def handleResponse(req, interesting):
+    table.add(req)
+-------------------------------------------------------------------------------------------------------------
+
+- Multiendpoint
+Benchmark the behavior
+
+    Send both the POST /cart and POST /cart/checkout request to Burp Repeater.
+
+    In Repeater, add the two tabs to a new group. For details on how to do this, see Creating a new tab group
+
+    Send the two requests in sequence over a single connection a few times. Notice from the response times that the first request consistently takes significantly longer than the second one. For details on how to do this, see Sending requests in sequence.
+
+    Add a GET request for the homepage to the start of your tab group.
+
+    Send all three requests in sequence over a single connection. Observe that the first request still takes longer, but by "warming" the connection in this way, the second and third requests are now completed within a much smaller window.
+
+    Deduce that this delay is caused by the back-end network architecture rather than the respective processing time of the each endpoint. Therefore, it is not likely to interfere with your attack.
+
+    Remove the GET request for the homepage from your tab group.
+
+    Make sure you have a single gift card in your cart.
+
+    In Repeater, modify the POST /cart request in your tab group so that the productId parameter is set to 1, that is, the ID of the Lightweight L33t Leather Jacket.
+
+    Send the requests in sequence again.
+
+    Observe that the order is rejected due to insufficient funds, as you would expect.
+
+Prove the concept
+
+    Remove the jacket from your cart and add another gift card.
+
+    In Repeater, try sending the requests again, but this time in parallel. For details on how to do this, see Sending requests in parallel.
+
+    Look at the response to the POST /cart/checkout request:
+        If you received the same "insufficient funds" response, remove the jacket from your cart and repeat the attack. This may take several attempts.
+        If you received a 200 response, check whether you successfully purchased the leather jacket. If so, the lab is solved.
+
+- Single endpoint
+
+    In Repeater, create a new group containing two copies of the POST /my-account/change-email request.
+
+    Change the email parameter of one request to anything@exploit-<YOUR-EXPLOIT-SERVER-ID>.exploit-server.net.
+
+    Change the email parameter of the other request to carlos@ginandjuice.shop.
+
+    Send the requests in parallel.
+
+    Check your inbox:
+        If you received a confirmation email in which the address in the body matches your own address, resend the requests in parallel and try again.
+        If you received a confirmation email in which the address in the body is carlos@ginandjuice.shop, click the confirmation link to update your address accordingly.
+
+    Go to your account page and notice that you now see a link for accessing the admin panel.
+
+    Visit the admin panel and delete the user carlos to solve the lab.
+
+- Time sensitive
+Bypass the per-session locking restriction
+
+    Notice that your session cookie suggests that the website uses a PHP back-end. This could mean that the server only processes one request at a time per session.
+
+    Send the GET /forgot-password request to Burp Repeater, remove the session cookie from the request, then send it.
+
+    From the response, copy the newly issued session cookie and CSRF token and use them to replace the respective values in one of the two POST /forgot-password requests. You now have a pair of password reset requests from two different sessions.
+
+    Send the two POST requests in parallel a few times and observe that the processing times are now much more closely aligned, and sometimes identical.
+
+Confirm the vulnerability
+
+    Go back to your inbox and notice that when the response times match for the pair of reset requests, this results in two confirmation emails that use an identical token. This confirms that a timestamp must be one of the inputs for the hash.
+
+    Consider that this also means the token would be predictable if you knew the other inputs for the hash function.
+
+    Notice the separate username parameter. This suggests that the username might not be included in the hash, which means that two different usernames could theoretically have the same token.
+
+    In Repeater, go to the pair of POST /forgot-password requests and change the username parameter in one of them to carlos.
+
+    Resend the two requests in parallel. If the attack worked, both users should be assigned the same reset token, although you won't be able to see this.
+
+    Check your inbox again and observe that, this time, you've only received one new confirmation email. Infer that the other email, hopefully containing the same token, has been sent to Carlos.
+
+    Copy the link from the email and change the username in the query string to carlos.
+
+    Visit the URL in the browser and observe that you're taken to the form for setting a new password as normal.
+
+    Set the password to something you'll remember and submit the form.
+
+    Try logging in as carlos using the password you just set.
+        If you can't log in, resend the pair of password reset emails and repeat the process.
+        If you successfully log in, visit the admin panel and delete the user carlos to solve the lab.

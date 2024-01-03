@@ -1,0 +1,24 @@
+- In errors
+-- Used fake product id to get error
+
+- On debug page 
+-- Found comment stating /cgi-bin/phpinfo.php
+-- Found SECRET_KEY
+
+- Backup files 
+-- Found that /robots.txt exists 
+-- Found /backup 
+-- Found the backup file 
+-- Found the password
+
+- Auth bypass 
+-- GET /admin said only local ips 
+-- Used TRACE /admin and found X-Custom-IP-Authorization header 
+-- Used match and replace to add the header to every request 
+
+- In version Control
+-- /.git was exposed
+-- Downloaded with: wget -r https://0a72004404556aec82242f0400bd00b1.web-security-academy.net/.git/
+-- cd into created dir, but don't go into .git
+-- Used git diff [prev branch]
+-- Logged in as admin

