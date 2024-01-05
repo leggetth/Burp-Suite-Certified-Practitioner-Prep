@@ -43,7 +43,7 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 - %25 = % when decoded so it ends up as %61 which equals a
 - To quickly do this in console:
   - Set the urlencoded string to a variable and use replace all:
-    ```
+    ```js
     // admin urlencoded is: %61%64%6d%69%6e
     > s = "%61%64%6d%69%6e"
     > s.replaceAll('%', '%25')
