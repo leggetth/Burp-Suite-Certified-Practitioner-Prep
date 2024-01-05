@@ -20,7 +20,8 @@
       /graphql/api
       /graphql/graphql
       ```
-- 
+- Session tokens can be manually put into the application storage
+  
 **Do before anything else:**
 - scan all found parameters
 - Crawl
