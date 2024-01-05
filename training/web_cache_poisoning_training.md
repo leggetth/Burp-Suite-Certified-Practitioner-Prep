@@ -101,4 +101,4 @@ callback=alert(1)
 ## URL Normalization
 - 404 error reflected url
 - You had to poison and immediately send the url to the victim
-- This was the url: https://0a44009203ac0bc18de49d8000e1004b.web-security-academy.net/x</p><script>alert(1)</script><p>
+- This was the url: `https://0a44009203ac0bc18de49d8000e1004b.web-security-academy.net/x</p><script>alert(1)</script><p>`
