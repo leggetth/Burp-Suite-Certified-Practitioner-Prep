@@ -54,6 +54,7 @@ onwebkitanimationiteration
 onwebkitanimationstart
 onwebkittransitionend
 onresize
+onbegin
 ```
 
 # Tags
