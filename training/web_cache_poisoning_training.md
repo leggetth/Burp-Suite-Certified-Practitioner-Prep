@@ -16,7 +16,7 @@
 - If you use this it adds a redirect to a url that includes the web dir in the original request
 - The website also allowed for X-Forwarded-Host which would change the link
 - I sent this request to tracking.js:
-```
+```http
 GET /resources/js/tracking.js HTTP/2Host: 0a5200060335f34b817d667700130056.web-security-academy.net
 Cookie: session=CMTcrvpZEooQ7J39QXbx1HYOk8OlhNwC
 Sec-Ch-Ua: "Not=A?Brand";v="99", "Chromium";v="118"
