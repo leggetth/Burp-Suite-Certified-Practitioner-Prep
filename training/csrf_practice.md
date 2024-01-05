@@ -1,4 +1,6 @@
-/* CSRF
+# CSRF
+
+```js
 
   CSRF Basic
 <html>
@@ -180,4 +182,4 @@ Connect to websocket script
     </script>
   </body>
 </html>
-*/
+```
