@@ -3,6 +3,7 @@
 | SQL injection | 4 |
 | Authentication | 4 |
 | Path Traversal | 5 |
+| Command Injection | 5 |
 | Business Logic Vulnerabilities | 3 |
 | Information Disclosure | 3 |
 | Access Control | 4 |
