@@ -7,7 +7,7 @@
 3. Making flawed assumptions about user behavior
 4. Domain-specific flaws
 5. Providing an encryption oracle
-
+---
 ## How to find each type:
 
 1. Excessive trust in client-side controls
@@ -30,8 +30,10 @@
   - Users won't always follow the intended sequence
     - See if you can perform actions out of order.
 4. Domain-specific flaws
+- Think carefully about what objectives an attacker might have and try to find different ways of achieving this using the provided functionality. 
 5. Providing an encryption oracle
-
+- Look for encrypted data in responses.
+---
 ## How to exploit each type:
 
 1. Excessive trust in client-side controls
@@ -69,9 +71,16 @@
     - Lab: Authentication bypass via flawed state machine
       - If you dropped the `/role-selector` request, the your role would default to admin.
 4. Domain-specific flaws
-
+- Portswigger provides two labs showing examples of exploiting this:
+  - Lab: Flawed enforcement of business rules
+    - You could alternate coupon codes.
+  - Lab: Infinite money logic flaw
+    - The gift card could be discounted so that it was less then it returned resulting in infinite money.
 5. Providing an encryption oracle
-
+- Lab: Authentication bypass via encryption oracle
+  - The `stay-logged-in` cookie was encrypted, however, the notification cookie was encrypted with the same algorithm and could be used to decrypt the `stay-logged-in` cookie.
+  - This was used to get a valid administrator stay logged in cookie.
+---
 ## Other important notes:
 - These vulnerabilities mainly arise from using the the app in ways that a developer would not intend.
   - For example editing the request through a proxy.
