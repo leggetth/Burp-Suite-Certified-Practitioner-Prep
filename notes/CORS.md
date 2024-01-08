@@ -20,7 +20,8 @@
 3. Whitelisted null origin value
 - Put `null` in the origin header and see if it is reflected.
 4. Exploiting XSS via CORS trust relationships
--
+- Check to see if subdomains are allowed in the `Access-Allow-Control-Origin` header.
+- If they are, see if there is XSS on these domains.
 5. Breaking TLS with poorly configured CORS
 -
 6. Intranets and CORS without credentials 
@@ -60,7 +61,10 @@ location = 'https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/
 </script>"></iframe>
 ```
 4. Exploiting XSS via CORS trust relationships
--
+- Use XSS with the first CORS exploit, or fetch:
+  ```html
+  <script>fetch()</script>
+  ```
 5. Breaking TLS with poorly configured CORS
 -
 6. Intranets and CORS without credentials 
