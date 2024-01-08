@@ -20,6 +20,15 @@
   - What happens when you reach those limits?
   - Is any transformation or normalization being performed on your input?
 3. Making flawed assumptions about user behavior
+- Three subtypes:
+  - Trusted users won't always remain trustworthy
+    - See if any endpoints lack controls. 
+  - Users won't always supply mandatory input
+    -  Only remove one parameter at a time to ensure all relevant code paths are reached.
+    -  Try deleting the name of the parameter as well as the value. The server will typically handle both cases differently.
+    -  Follow multi-stage processes through to completion. Sometimes tampering with a parameter in one step will have an effect on another step further along in the workflow.
+  - Users won't always follow the intended sequence
+    - See if you can perform actions out of order.
 4. Domain-specific flaws
 5. Providing an encryption oracle
 
@@ -43,7 +52,24 @@
     - The exploit was to use the truncation mechanism so that the registered email ended in the employee domain:
       - `very-long-string@dontwannacry.com.YOUR-EMAIL-ID.web-security-academy.net`
 3. Making flawed assumptions about user behavior
+- Three subtypes:
+  - Trusted users won't always remain trustworthy
+    - Lab: Inconsistent security controls
+      - After registering with any email, you could just change the email to an employee email without the need for verification.
+  - Users won't always supply mandatory input
+    -  Lab: Weak isolation on dual-use endpoint
+      - You could change passwords without supplying the current one.
+    -  Lab: Password reset broken logic
+      - The temp forgot password token was not required.
+  - Users won't always follow the intended sequence
+    - Lab: 2FA simple bypass
+      - The mfa code was not required, you could just change the url to `/my-account`
+    - Lab: Insufficient workflow validation
+      - If you added something to the cart, you could just send the `GET /cart/order-confirmation?order-confirmation=true` request and the order would be submitted.
+    - Lab: Authentication bypass via flawed state machine
+      - If you dropped the `/role-selector` request, the your role would default to admin.
 4. Domain-specific flaws
+
 5. Providing an encryption oracle
 
 ## Other important notes:
