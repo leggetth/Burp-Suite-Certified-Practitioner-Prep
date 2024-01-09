@@ -2,10 +2,43 @@
 
 ## Types:
 
+1. Basic
+2. Bypassing CSRF Token Validation
+3. Bypassing SameSite Cookie restrictions
+4. Bypassing Referer-based CSRF defenses
+
 ## How to find each type:
 
+1. Basic
+
+2. Bypassing CSRF Token Validation
+
+3. Bypassing SameSite Cookie restrictions
+
+4. Bypassing Referer-based CSRF defenses
+
+---
+
 ## How to exploit each type:
-- [PoC Exploits for Portswiggers Labs](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md)
+
+1. Basic
+- [CSRF Basic](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-basic)
+2. Bypassing CSRF Token Validation
+- [CSRF when validation depends on method](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-when-validation-depends-on-method)
+- [CSRF when validation depends on parameter](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-when-validation-depends-on-parameter)
+- [CSRF when token is not tied to user](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-when-token-is-not-tied-to-user)
+- [CSRF when token is tied to non-session cookie](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-when-token-is-tied-to-non-session-cookie)
+- [CSRF when token is duplicated in cookie](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-when-token-is-duplicated-in-cookie)
+3. Bypassing SameSite Cookie restrictions
+- [CSRF Samesite Lax bypass](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-samesite-lax-bypass)
+- [CSRF SameSite strict via client open redirect](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-samesite-strict-via-client-open-redirect)
+- [CSRF SameSite Strict via sibling domain](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-samesite-strict-via-sibling-domain)
+- [CSRF bypass via cookie refresh](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-bypass-via-cookie-refresh)
+4. Bypassing Referer-based CSRF defenses
+- [CCSRF where referer header must be present](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-where-referer-header-must-be-present)
+- [CSRF with bad referer validation](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md#csrf-with-bad-referer-validation)
+
+---
 
 ## Other important notes:
 - For an attack to be possible, three conditions must be met:
