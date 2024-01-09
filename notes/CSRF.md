@@ -5,6 +5,7 @@
 ## How to find each type:
 
 ## How to exploit each type:
+- [PoC Exploits for Portswiggers Labs] (https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/csrf_practice.md)
 
 ## Other important notes:
 - For an attack to be possible, three conditions must be met:
