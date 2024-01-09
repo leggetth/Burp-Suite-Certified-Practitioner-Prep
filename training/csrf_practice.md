@@ -55,7 +55,7 @@
 
 ## CSRF when token is not tied to user
  
-### All you need to do is log in, go into developer tools and copy the current CSRF token
+- All you need to do is log in, go into developer tools and copy the current CSRF token
 
 ```html
 <html>
@@ -105,7 +105,7 @@
 
 ## CSRF Samesite Lax bypass
 
-### _method changes the method if allowed
+- _method changes the method if allowed
 
 ```html
 <html>
@@ -133,7 +133,7 @@
 
 ## CSRF SameSite Strict via sibling domain
 
-### This lab uses cross-site websocket hijacking
+- This lab uses cross-site websocket hijacking
 
 ```html
 Connect to websocket script
@@ -154,7 +154,7 @@ Connect to websocket script
 ```
 
 ## CSRF bypass via cookie refresh
-### Only works for SSO because SSO disables Lax for 2 minutes
+- Only works for SSO because SSO disables Lax for 2 minutes
 
 ```html
 <html>
@@ -176,7 +176,7 @@ Connect to websocket script
 
 ## CSRF where referer header must be present
 
-### meta tag removes the header
+- meta tag removes the header
 
 ```html
 <html>
