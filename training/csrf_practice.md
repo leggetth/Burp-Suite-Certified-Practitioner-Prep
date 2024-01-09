@@ -1,6 +1,6 @@
 # CSRF
 
-```js
+```html
 
  CSRF Basic
 <html>
