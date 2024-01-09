@@ -23,7 +23,7 @@
 - Check to see if subdomains are allowed in the `Access-Allow-Control-Origin` header.
 - If they are, see if there is XSS on these domains.
 5. Breaking TLS with poorly configured CORS
--
+- Check subdomains for vulnerabilities.
 6. Intranets and CORS without credentials 
 -
 ---
