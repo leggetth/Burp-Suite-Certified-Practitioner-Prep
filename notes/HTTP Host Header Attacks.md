@@ -14,7 +14,7 @@
    ```
   -  Try indenting one of the duplicate host headers
 -  Try override headers
-  ```http
+  ```
   X-Forwarded-Host
   X-Host
   X-Forwarded-Server
@@ -22,6 +22,8 @@
   Forwarded
   ```
   - param miner should test for these
+
+---
 
 ## How to exploit each type:
 
@@ -46,8 +48,10 @@
   - For this attack you first need the address to the internal host or other host
   - Next, you need to send two requests to repeater:
     - The first is a normal request to the homepage with `Connection: keep-alive`.
-    - The second uses a host header with the other hosts value
+    - The second uses a host header with the other hosts value.
+  - Send both requests in sequence, and see if both return ok
 
+---
 
 ## Other important notes:
 - Has to be tested manually
