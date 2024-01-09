@@ -7,15 +7,28 @@
 3. Bypassing SameSite Cookie restrictions
 4. Bypassing Referer-based CSRF defenses
 
+---
+
 ## How to find each type:
 
 1. Basic
+- Check all data that a user can change, for example the users email.
 
 2. Bypassing CSRF Token Validation
+- Try changing the method of the request, see if the token is still validated.
+- Try removing the token.
+- Try using the token for the other users request.
+- Look for something like `csrfKey`
+- Look for a cookie duplicating the token
 
 3. Bypassing SameSite Cookie restrictions
+- See if `SameSite=Strict` is set as a cookie, if not try the Lax bypass.
+- Check parameters in others requests for redirects.
+- If Oauth is being used try the cookie refresh attack
 
 4. Bypassing Referer-based CSRF defenses
+- Try removing the referer header
+- See if the referer header just needs to include its own name: `http://attacker-website.com/csrf-attack?vulnerable-website.com`
 
 ---
 
@@ -45,4 +58,5 @@
   - A relevant action. There is an action within the application that the attacker has a reason to induce. This might be a privileged action (such as modifying permissions for other users) or any action on user-specific data (such as changing the user's own password).
   - Cookie-based session handling. Performing the action involves issuing one or more HTTP requests, and the application relies solely on session cookies to identify the user who has made the requests. There is no other mechanism in place for tracking sessions or validating user requests.
   - No unpredictable request parameters. The requests that perform the action do not contain any parameters whose values the attacker cannot determine or guess. For example, when causing a user to change their password, the function is not vulnerable if an attacker needs to know the value of the existing password.
+  - Burp Suite Pro has a built in PoC generator, this will generate a payload similar to the basic payload, which you then can edit.
 
