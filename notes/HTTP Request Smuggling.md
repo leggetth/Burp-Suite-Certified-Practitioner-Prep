@@ -11,8 +11,8 @@
    2. H2.TE
 3. Browser
    1. CL.0
-   2. Client-side desync
-   3. Pause-based desync
+
+---
 
 ## How to find each type:
 
@@ -31,8 +31,9 @@
     - Then add a 0 before the second request
 3. Browser
    1. CL.0
-   2. Client-side desync
-   3. Pause-based desync
+   - When performing the attack, if the response to the follow-up request is normal, then the endpoint is not vulnerable
+
+ ---
 
 ## How to exploit each type:
 
@@ -94,8 +95,13 @@
        ```
 3. Browser
    1. CL.0
-   2. Client-side desync
-   3. Pause-based desync 
+   - Create one tab containing the setup request and another containing an arbitrary follow-up request.
+   - Add the two tabs to a group in the correct order.
+   - Using the drop-down menu next to the Send button, change the send mode to Send group in sequence (single connection).
+   - Change the Connection header to keep-alive.
+   - Send the sequence and check the responses.
+
+---
 
 ## Other important notes:
 - HTTP/1.1 allows for content-length transfer-encoding
