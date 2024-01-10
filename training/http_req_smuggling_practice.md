@@ -159,6 +159,13 @@ x=1
 - More info: https://portswigger.net/web-security/request-smuggling/advanced/response-queue-poisoning
 - Don't know why, however adding the cookie and content-length fixed it
 - Got the admin session token and used it to steal their session
+- I have a bcheck to look for this, may have to scan more than once for it to appear
+- In the lab you need to try to get a 302, to automate this:
+ - Send to intruder
+  - Set attack to sniper
+  - Payload to null payloads continue indefinitely
+  - Uncheck update content-length
+  - Make resource pool, max concurrent = 1, delay 800ms
 ```http
 POST / HTTP/2
 Host: 0a280016039875158045daf500f800bc.web-security-academy.net
