@@ -12,8 +12,11 @@
 
 1. HTTP/1.1
     1. CL.TE
+       - [Using 404 response](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/http_req_smuggling_practice.md#confirming-tecl-using-404)
     2. TE.CL
+       - [Using 404 response](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/http_req_smuggling_practice.md#confirming-tecl-using-404)
     3. TE.TE
+       - [Using invalid method GPOST](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/training/http_req_smuggling_practice.md#obfuscating-te)
 
 ## How to exploit each type:
 
