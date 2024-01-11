@@ -8,7 +8,11 @@
     ;$Foo}
     $Foo \xYZ
     ```
-  - In JS: ```"$where":"'\"`{\r;$Foo}\n$Foo \\xYZ\u0000"```
+  - In JS:
+    ```
+    "'\"`{\r;$Foo}\n$Foo \\xYZ\u0000"
+    "$where":"'\"`{\r;$Foo}\n$Foo \\xYZ\u0000"
+    ```
   - If this causes an error you can use backslash to remove a character at a time to see which are processed.
   - The null character `%00` or `\u0000` may cause everything following to be ignored
 
