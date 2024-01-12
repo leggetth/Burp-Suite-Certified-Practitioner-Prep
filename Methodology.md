@@ -246,10 +246,4 @@ The labs that require an active user vs the ones that don't.
 | | [OAuth authentication](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#oauth-authentication) |
 | | [JWT](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#jwt) |
 
-## System Access
-
-| Requires user intervention | Does not require user intervention |
-| :--- | :--- |
-| [Lab: SQL injection UNION attack, retrieving data from other tables](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#lab-sql-injection-union-attack-retrieving-data-from-other-tables) | |
-| [] | |
-
+---
