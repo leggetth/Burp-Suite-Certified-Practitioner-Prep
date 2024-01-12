@@ -211,8 +211,25 @@
 
 # User Intervention Table
 
+## Initial Access
+
 | Requires user intervention | Does not require user intervention |
 | :--- | :--- |
-|  <td colspan=2>**Initial Access** ||
+| [Cross-Site Scripting (XSS)](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#cross-site-scripting-xss) | [SQL Injection](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#sql-injection) |
+| [DOM-based Vulnerabilities](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#dom-based-vulnerabilities) | [Authentication](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#authentication) |
 | | |
+
+## Privilege Escalation
+
+| Requires user intervention | Does not require user intervention |
+| :--- | :--- |
+| [Lab: SQL injection UNION attack, retrieving data from other tables](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#lab-sql-injection-union-attack-retrieving-data-from-other-tables) | |
+| [] | |
+
+## System Access
+
+| Requires user intervention | Does not require user intervention |
+| :--- | :--- |
+| [Lab: SQL injection UNION attack, retrieving data from other tables](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#lab-sql-injection-union-attack-retrieving-data-from-other-tables) | |
+| [] | |
 
