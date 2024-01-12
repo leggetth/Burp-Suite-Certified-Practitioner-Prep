@@ -211,8 +211,7 @@
 
 # User Intervention Table
 
-[!NOTE]
-The labs that require an active user vs the ones that don't.
+**The labs that require an active user vs the ones that don't.**
 
 ## Initial Access
 
