@@ -232,8 +232,19 @@ The labs that require an active user vs the ones that don't.
 
 | Requires user intervention | Does not require user intervention |
 | :--- | :--- |
-| [Lab: SQL injection UNION attack, retrieving data from other tables](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#lab-sql-injection-union-attack-retrieving-data-from-other-tables) | |
-| [] | |
+| [Cross-Site Scripting (XSS)](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#cross-site-scripting-xss) | [SQL Injection](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#sql-injection) |
+| [DOM-based Vulnerabilities](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#dom-based-vulnerabilities) | [Authentication](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#authentication) |
+| [WebSockets](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#websockets) | [Business logic vulnerabilities](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#business-logic-vulnerabilities)|
+| [Web Cache Poisoning](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#web-cache-poisoning) | [Insecure deserialization](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#insecure-deserialization) |
+| [HTTP Host header attacks](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#http-host-header-attacks) | [HTTP Host header attacks](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#http-host-header-attacks) |
+| [HTTP Request Smuggling](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#http-request-smuggling) | [GraphQL API vulnerabilities](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#graphql-api-vulnerabilities) |
+| [Prototype pollution](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#prototype-pollution) | [NoSQL injection](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#nosql-injection) |
+| [Cross-Site Request Forgery (CSRF)](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#cross-site-request-forgery-csrf) | [API testing](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#api-testing) |
+| [Cross-origin resource sharing (CORS)](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#cross-origin-resource-sharing-cors) | [Server-side Request Forgery (SSRF)](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#server-side-request-forgery-ssrf) |
+| [Essential Skills](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#essential-skills) | [Access Control Vulnerabilities](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#access-control-vulnerabilities) |
+| | [Information disclosure](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#information-disclosure) |
+| | [OAuth authentication](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#oauth-authentication) |
+| | [JWT](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#jwt) |
 
 ## System Access
 
