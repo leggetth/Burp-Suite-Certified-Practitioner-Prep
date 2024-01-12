@@ -21,7 +21,7 @@
 | Websockets | 4 |
 | Insecure Deserialization | 4 |
 | GraphQL API Vulnerabilities | 4 |
-| SSTI | 3 |
+| SSTI | 4 |
 | Web Cache Poisoning | 3 |
 | HTTP Host Header Attacks | 3 |
 | HTTP Request Smuggling | 2 |
