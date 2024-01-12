@@ -244,5 +244,6 @@
 | | [Information disclosure](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#information-disclosure) |
 | | [OAuth authentication](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#oauth-authentication) |
 | | [JWT](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#jwt) |
+| | [Race Conditions](https://github.com/leggetth/Burp-Suite-Certified-Practitioner-Prep/blob/main/Lab%20Solutions%20by%20Type.md#race-conditions) |
 
 ---
