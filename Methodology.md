@@ -213,6 +213,6 @@
 
 | Requires user intervention | Does not require user intervention |
 | :--- | :--- |
-|  <td colspan=2>**Initial Access**
+|  <td colspan=2>**Initial Access** ||
 | | |
 
