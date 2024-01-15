@@ -11,6 +11,7 @@
 
 - Check for WebSockets - if there, look at WebSockets lab
 - If webcache poisoning, can use `Origin` header as a cache buster
+    - If you see `X-Cache`, try this header in the request `Pragma: x-get-cache-key`
 - If blog posting is allowed, see HTTP Request Smuggling (XSS too obviously)
 - Check the trackingid cookie for SQL
 - Graphql Endpoints
