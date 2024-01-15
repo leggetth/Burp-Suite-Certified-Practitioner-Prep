@@ -107,5 +107,6 @@
 - HTTP/1.1 allows for content-length transfer-encoding
 - Some servers that do support the Transfer-Encoding header can be induced not to process it if the header is obfuscated in some way.
 - HTTP/2 is only vulnerable if the backend supports HTTP/1.1
+    - For HTTP/2 attacks the smuggled request must be HTTP/1.1
 - You need to manually switch the protocol in repeater
 - [Hidden HTTP/2 support](https://portswigger.net/web-security/request-smuggling/advanced)
