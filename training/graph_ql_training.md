@@ -40,6 +40,7 @@ bruteforce$index:login(input:{username: "carlos", password: "$password"}) {
 `.replaceAll('$index',index).replaceAll('$password',element)).join('\n'));console.log("The query has been copied to your clipboard.");
 ```
 - Just paste it under the mutation and click send
+        - Make sure that mutation is by itself, delete the input `mutation {`
 - It will auto fix the spacing
 
 # CSRF
