@@ -20,4 +20,4 @@
 # Manipulating the WebSocket handshake to exploit vulnerabilities
 - Again there is XSS, however this time if you send one it blacklists the IP 
     - You can use X-Forwarded-For to bypass this on the handshake
-- Used repeater to reconnect with the header and used this payload: `<img src=1 oNeRrOr=alert`1`>`
+- Used repeater to reconnect with the header and used this payload: ```<img src=1 oNeRrOr=alert`1`>```
