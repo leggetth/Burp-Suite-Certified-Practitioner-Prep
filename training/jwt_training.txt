@@ -29,6 +29,7 @@
 }
 --------------------------------------------------------------------------------------------
 -- Change kid in the JWT header to the kid
+-- set JKU header like: "jku": "https://<exploit-server>/.well-known/jwks.json"
 -- Sign with my RSA key
 
 - Via kid path traversal
