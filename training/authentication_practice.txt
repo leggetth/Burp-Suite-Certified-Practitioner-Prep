@@ -21,6 +21,8 @@
 -- -- 1. Set the attack type as pitchfork
 -- -- 2. The first payload is the last number in the ip address following the X-Forwarded-For
 -- -- 3. The second payload is the username
+-- -- 4. Set the password to a long word
+peterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeterpeter
 -- The request with the longest response is the username
 -- To find the password use the same method but change the third number in the ip address and the second payload is now the password.
 
