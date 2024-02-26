@@ -18,7 +18,7 @@
 
 - In version Control
 -- /.git was exposed
--- Downloaded with: wget -r https://0a72004404556aec82242f0400bd00b1.web-security-academy.net/.git/
+-- Downloaded with: wget -r https://YOUR-LAB-ID.web-security-academy.net/.git/
 -- cd into created dir, but don't go into .git
 -- Used git diff [prev branch]
 -- Logged in as admin
